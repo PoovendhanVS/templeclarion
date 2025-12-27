@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SMS Verification</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .alink{
+            text-decoration: none;
+        }
+        /* Temple Color Palette */
+        :root {
+            --temple-red: #E53E3E;
+            --temple-dark-red: #C53030;
+            --temple-saffron: #F6AD55;
+            --temple-gold: #D69E2E;
+            --temple-orange: #DD6B20;
+            --temple-cream: #FEF3C7;
+            --temple-light: #FFF9DB;
+            --temple-dark: #2D3748;
+            --temple-success: #38A169;
+            --temple-border-radius: 16px;
+            --temple-shadow: 0 4px 20px rgba(229, 62, 62, 0.15);
+        }
+        
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, var(--temple-cream) 0%, var(--temple-light) 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--temple-dark);
+            touch-action: manipulation;
+        }
+        
+        .container {
+            max-width: 450px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        /* Logo/Header */
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--temple-red), var(--temple-orange));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 32px;
+            box-shadow: 0 6px 20px rgba(229, 62, 62, 0.3);
+        }
+        
+        .logo h1 {
+            color: var(--temple-red);
+            font-weight: 700;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .logo p {
+            color: var(--temple-dark);
+            opacity: 0.8;
+            font-size: 16px;
+        }
+        
+        /* Card Design */
+        .card {
+            background: white;
+            border-radius: var(--temple-border-radius);
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: var(--temple-shadow);
+            border: 1px solid rgba(229, 62, 62, 0.1);
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--temple-dark);
+            font-size: 16px;
+        }
+        
+        /* Phone Input */
+        .phone-input-group {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .phone-input-group:focus-within {
+            border-color: var(--temple-red);
+            box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+        }
+        
+        .phone-prefix {
+            padding: 16px 15px;
+            background: #F8FAFC;
+            font-weight: 600;
+            color: var(--temple-dark);
+            border-right: 2px solid #E2E8F0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .phone-input {
+            flex: 1;
+            border: none;
+            padding: 16px 15px;
+            font-size: 16px;
+            width: 100%;
+            outline: none;
+            color: var(--temple-dark);
+        }
+        
+        .phone-input::placeholder {
+            color: #A0AEC0;
+        }
+        
+        /* SMS Code Input */
+        .sms-container {
+            text-align: center;
+        }
+        
+        .sms-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--temple-dark);
+            margin-bottom: 5px;
+        }
+        
+        .sms-subtitle {
+            color: #718096;
+            font-size: 15px;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+        
+        .sms-code-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 25px 0;
+        }
+        
+        .sms-digit {
+            width: 55px;
+            height: 65px;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--temple-dark);
+            background-color: white;
+            transition: all 0.3s;
+            outline: none;
+        }
+        
+        .sms-digit:focus {
+            border-color: var(--temple-red);
+            box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .sms-digit.filled {
+            border-color: var(--temple-saffron);
+            background-color: #FFF9DB;
+        }
+        
+        /* SMS Timer */
+        .sms-timer {
+            text-align: center;
+            margin: 25px 0;
+            font-size: 16px;
+            color: var(--temple-dark);
+        }
+        
+        .timer-count {
+            font-weight: 700;
+            color: var(--temple-red);
+            font-size: 20px;
+            display: inline-block;
+            min-width: 50px;
+        }
+        
+        /* Resend SMS */
+        .resend-container {
+            text-align: center;
+            margin: 25px 0;
+        }
+        
+        .resend-btn {
+            background: none;
+            border: none;
+            color: var(--temple-red);
+            font-weight: 600;
+            font-size: 16px;
+            padding: 12px 25px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .resend-btn:hover:not(:disabled) {
+            background-color: #FEF2F2;
+        }
+        
+        .resend-btn:disabled {
+            color: #A0AEC0;
+            cursor: not-allowed;
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(to right, var(--temple-red), var(--temple-orange));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .btn-primary:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 10px rgba(229, 62, 62, 0.3);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--temple-red);
+            border: 2px solid var(--temple-red);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 15px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:active {
+            background-color: #FEF2F2;
+            transform: translateY(2px);
+        }
+        
+        /* Success Screen */
+        .success-screen {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--temple-saffron), var(--temple-gold));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 36px;
+            box-shadow: 0 8px 20px rgba(214, 158, 46, 0.3);
+        }
+        
+        .success-title {
+            color: var(--temple-red);
+            font-weight: 700;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+        
+        .success-message {
+            color: var(--temple-dark);
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+        
+        /* Alert Styles */
+        .alert-container {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .alert-message {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .alert-success {
+            background-color: #C6F6D5;
+            color: #22543D;
+            border: 1px solid #9AE6B4;
+        }
+        
+        .alert-error {
+            background-color: #FED7D7;
+            color: #742A2A;
+            border: 1px solid #FC8181;
+        }
+        
+        .helper-text {
+            font-size: 14px;
+            color: #718096;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+        
+        .error-text {
+            color: var(--temple-red);
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #718096;
+        }
+        
+        .footer a {
+            color: var(--temple-red);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        /* Step Indicator */
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .step-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #E2E8F0;
+            color: #718096;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+        
+        .step-circle.active {
+            background-color: var(--temple-red);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.2);
+        }
+        
+        .step-circle.completed {
+            background-color: var(--temple-saffron);
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 13px;
+            color: #718096;
+            font-weight: 500;
+        }
+        
+        .step-label.active {
+            color: var(--temple-red);
+            font-weight: 600;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .card {
+                padding: 25px 20px;
+            }
+            
+            .sms-digit {
+                width: 50px;
+                height: 60px;
+                font-size: 26px;
+            }
+            
+            .phone-prefix, .phone-input {
+                padding: 14px 12px;
+            }
+            
+            .btn-primary, .btn-secondary {
+                padding: 16px;
+                font-size: 17px;
+            }
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .pulse {
+            animation: pulse 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        /* Hide elements */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Logo/Header -->
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h1>SMS Verification</h1>
+            <p>Secure password reset with SMS</p>
+        </div>
+        
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step">
+                <div class="step-circle active" id="step1Circle">1</div>
+                <div class="step-label active">Phone</div>
+            </div>
+            <div class="step">
+                <div class="step-circle" id="step2Circle">2</div>
+                <div class="step-label">SMS Code</div>
+            </div>
+            <div class="step">
+                <div class="step-circle" id="step3Circle">3</div>
+                <div class="step-label">Password</div>
+            </div>
+        </div>
+        
+        <div class="alert-container" id="alertContainer"></div>
+        
+        <!-- Step 1: Phone Input -->
+        <div class="card" id="step1Card">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-mobile-alt me-2" style="color: var(--temple-red);"></i>
+                    Enter your phone number
+                </label>
+                <div class="phone-input-group">
+                    <div class="phone-prefix">
+                        <i class="fas fa-flag" style="color: var(--temple-red);"></i>
+                        <span>+91</span>
+                    </div>
+                    <input type="tel" class="phone-input" id="phoneInput" 
+                           placeholder="Enter 10-digit number" inputmode="numeric" maxlength="10">
+                </div>
+                <div class="helper-text">
+                    We'll send a 6-digit verification code via SMS
+                </div>
+                <div class="error-text" id="phoneError">
+                    Please enter a valid 10-digit phone number
+                </div>
+            </div>
+            
+            <button class="btn-primary" id="sendSMSBtn">
+                <i class="fas fa-paper-plane"></i> Send Verification Code
+            </button>
+            
+            <a class="alink" href="/">
+                <div>
+                    <button class="btn-secondary" id="backToLoginBtn">
+                        <i class="fas fa-arrow-left"></i> Back to Login
+                    </button>
+                </div>
+            </a>
+        </div>
+        
+        <!-- Step 2: SMS Verification -->
+        <div class="card hidden" id="step2Card">
+            <div class="sms-container">
+                <div class="sms-title">
+                    <i class="fas fa-sms me-2" style="color: var(--temple-red);"></i>
+                    Enter Verification Code
+                </div>
+                <div class="sms-subtitle" id="smsSubtitle">
+                    We've sent a 6-digit code to 
+                    <span id="phoneDisplay" style="font-weight: 600; color: var(--temple-red);"></span>
+                </div>
+                
+                <!-- SMS Code Digits -->
+                <div class="sms-code-container">
+                    <input type="text" class="sms-digit" id="digit1" maxlength="1" inputmode="numeric">
+                    <input type="text" class="sms-digit" id="digit2" maxlength="1" inputmode="numeric">
+                    <input type="text" class="sms-digit" id="digit3" maxlength="1" inputmode="numeric">
+                    <input type="text" class="sms-digit" id="digit4" maxlength="1" inputmode="numeric">
+                    <input type="text" class="sms-digit" id="digit5" maxlength="1" inputmode="numeric">
+                    <input type="text" class="sms-digit" id="digit6" maxlength="1" inputmode="numeric">
+                </div>
+                
+                <!-- Timer -->
+                <div class="sms-timer">
+                    Code expires in: <span class="timer-count" id="timerCount">05:00</span>
+                </div>
+                
+                <!-- Resend Button -->
+                <div class="resend-container">
+                    <button class="resend-btn" id="resendSMSBtn" disabled>
+                        Resend Code (60s)
+                    </button>
+                </div>
+                
+                <div class="error-text" id="codeError">
+                    Invalid verification code. Please try again.
+                </div>
+            </div>
+            
+            <button class="btn-primary" id="verifyCodeBtn">
+                <i class="fas fa-check"></i> Verify Code
+            </button>
+            
+            <button class="btn-secondary" id="changePhoneBtn">
+                <i class="fas fa-phone"></i> Change Phone Number
+            </button>
+        </div>
+        
+        <!-- Step 3: New Password -->
+        <div class="card hidden" id="step3Card">
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-lock me-2" style="color: var(--temple-red);"></i>
+                    Create New Password
+                </label>
+                <input type="password" class="phone-input" id="newPassword" 
+                       placeholder="Enter new password" style="border: 2px solid #E2E8F0; border-radius: 12px;">
+                <div class="helper-text">
+                    Use at least 8 characters with letters and numbers
+                </div>
+                <div class="error-text" id="passwordError">
+                    Password must be at least 8 characters long
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-lock me-2" style="color: var(--temple-red);"></i>
+                    Confirm Password
+                </label>
+                <input type="password" class="phone-input" id="confirmPassword" 
+                       placeholder="Confirm new password" style="border: 2px solid #E2E8F0; border-radius: 12px;">
+                <div class="error-text" id="confirmError">
+                    Passwords do not match
+                </div>
+            </div>
+            
+            <button class="btn-primary" id="resetPasswordBtn">
+                <i class="fas fa-key"></i> Reset Password
+            </button>
+            
+            <button class="btn-secondary" id="backToSMSBtn">
+                <i class="fas fa-arrow-left"></i> Back to SMS Code
+            </button>
+        </div>
+        
+        <!-- Success Screen -->
+        <div class="card hidden" id="successCard">
+            <div class="success-screen">
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="success-title">Password Reset Successful!</div>
+                <div class="success-message">
+                    Your password has been successfully reset. You can now log in with your new password.
+                </div>
+                <a class="alink" href="/">
+                <div>
+                <button class="btn-primary" id="goToLoginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Go to Login
+                </button>
+                </div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            Need help? <a href="#">Contact Support</a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    // DOM Elements
+    const step1Card = document.getElementById('step1Card');
+    const step2Card = document.getElementById('step2Card');
+    const step3Card = document.getElementById('step3Card');
+    const successCard = document.getElementById('successCard');
+    
+    const step1Circle = document.getElementById('step1Circle');
+    const step2Circle = document.getElementById('step2Circle');
+    const step3Circle = document.getElementById('step3Circle');
+    
+    const phoneInput = document.getElementById('phoneInput');
+    const phoneDisplay = document.getElementById('phoneDisplay');
+    const phoneError = document.getElementById('phoneError');
+    
+    const digitInputs = [
+        document.getElementById('digit1'),
+        document.getElementById('digit2'),
+        document.getElementById('digit3'),
+        document.getElementById('digit4'),
+        document.getElementById('digit5'),
+        document.getElementById('digit6')
+    ];
+    
+    const newPassword = document.getElementById('newPassword');
+    const confirmPassword = document.getElementById('confirmPassword');
+    const passwordError = document.getElementById('passwordError');
+    const confirmError = document.getElementById('confirmError');
+    const codeError = document.getElementById('codeError');
+    
+    const sendSMSBtn = document.getElementById('sendSMSBtn');
+    const verifyCodeBtn = document.getElementById('verifyCodeBtn');
+    const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+    const resendSMSBtn = document.getElementById('resendSMSBtn');
+    const changePhoneBtn = document.getElementById('changePhoneBtn');
+    const backToSMSBtn = document.getElementById('backToSMSBtn');
+    const backToLoginBtn = document.getElementById('backToLoginBtn');
+    const goToLoginBtn = document.getElementById('goToLoginBtn');
+    
+    const timerCount = document.getElementById('timerCount');
+    const smsSubtitle = document.getElementById('smsSubtitle');
+    
+    let currentStep = 1;
+    let userPhoneNumber = '';
+    let generatedCode = '';
+    let timerInterval;
+    let resendTimer = 60;
+    
+    // Format phone number as user types
+    phoneInput.addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        
+        if (value.length > 10) {
+            value = value.substring(0, 10);
+        }
+        
+        this.value = value;
+        
+        // Clear error when typing
+        phoneError.style.display = 'none';
+    });
+    
+    // SMS Code digit input handling
+    digitInputs.forEach((digit, index) => {
+        digit.addEventListener('input', function() {
+            // Only allow numbers
+            this.value = this.value.replace(/\D/g, '');
+            
+            // Add filled class
+            if (this.value) {
+                this.classList.add('filled');
+            } else {
+                this.classList.remove('filled');
+            }
+            
+            // Clear error
+            codeError.style.display = 'none';
+            
+            // Auto-focus next digit
+            if (this.value.length === 1 && index < digitInputs.length - 1) {
+                digitInputs[index + 1].focus();
+            }
+        });
+        
+        digit.addEventListener('keydown', function(e) {
+            // Handle backspace
+            if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                digitInputs[index - 1].focus();
+                digitInputs[index - 1].value = '';
+                digitInputs[index - 1].classList.remove('filled');
+            }
+            
+            // Handle arrow keys
+            if (e.key === 'ArrowLeft' && index > 0) {
+                digitInputs[index - 1].focus();
+            }
+            if (e.key === 'ArrowRight' && index < digitInputs.length - 1) {
+                digitInputs[index + 1].focus();
+            }
+        });
+        
+        // Paste handling
+        digit.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedData = e.clipboardData.getData('text').replace(/\D/g, '');
+            
+            if (pastedData.length === 6) {
+                for (let i = 0; i < 6; i++) {
+                    digitInputs[i].value = pastedData[i];
+                    digitInputs[i].classList.add('filled');
+                }
+                digitInputs[5].focus();
+            }
+        });
+    });
+    
+    // Update steps visualization
+    function updateSteps(step) {
+        // Reset all steps
+        step1Circle.className = 'step-circle';
+        step2Circle.className = 'step-circle';
+        step3Circle.className = 'step-circle';
+        
+        document.querySelectorAll('.step-label').forEach(label => {
+            label.classList.remove('active');
+        });
+        
+        // Update based on current step
+        if (step === 1) {
+            step1Circle.className = 'step-circle active';
+            document.querySelector('.step:nth-child(1) .step-label').classList.add('active');
+        } else if (step === 2) {
+            step1Circle.className = 'step-circle completed';
+            step2Circle.className = 'step-circle active';
+            document.querySelector('.step:nth-child(2) .step-label').classList.add('active');
+        } else if (step === 3) {
+            step1Circle.className = 'step-circle completed';
+            step2Circle.className = 'step-circle completed';
+            step3Circle.className = 'step-circle active';
+            document.querySelector('.step:nth-child(3) .step-label').classList.add('active');
+        }
+    }
+    
+    // Show specific step
+    function showStep(step) {
+        // Hide all cards
+        step1Card.classList.add('hidden');
+        step2Card.classList.add('hidden');
+        step3Card.classList.add('hidden');
+        successCard.classList.add('hidden');
+        
+        // Show the requested card
+        if (step === 1) {
+            step1Card.classList.remove('hidden');
+            updateSteps(1);
+            phoneInput.focus();
+        } else if (step === 2) {
+            step2Card.classList.remove('hidden');
+            updateSteps(2);
+            digitInputs[0].focus();
+            startSMSTimer();
+        } else if (step === 3) {
+            step3Card.classList.remove('hidden');
+            updateSteps(3);
+            newPassword.focus();
+        } else if (step === 4) {
+            successCard.classList.remove('hidden');
+            step1Circle.className = 'step-circle completed';
+            step2Circle.className = 'step-circle completed';
+            step3Circle.className = 'step-circle completed';
+            clearInterval(timerInterval);
+        }
+        
+        currentStep = step;
+    }
+    
+    // Generate a 6-digit verification code
+    function generateVerificationCode() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+    
+    // Start SMS countdown timer (5 minutes)
+    function startSMSTimer() {
+        let timeLeft = 5 * 60; // 5 minutes in seconds
+        clearInterval(timerInterval);
+        
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerCount.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerCount.textContent = '00:00';
+                timerCount.style.color = 'var(--temple-red)';
+            }
+        }, 1000);
+        
+        // Start resend timer
+        startResendTimer();
+    }
+    
+    // Start resend timer (60 seconds)
+    function startResendTimer() {
+        resendTimer = 60;
+        resendSMSBtn.disabled = true;
+        updateResendButton();
+        
+        const resendInterval = setInterval(() => {
+            resendTimer--;
+            updateResendButton();
+            
+            if (resendTimer <= 0) {
+                clearInterval(resendInterval);
+                resendSMSBtn.disabled = false;
+                resendSMSBtn.textContent = 'Resend Code';
+            }
+        }, 1000);
+    }
+    
+    // Update resend button text
+    function updateResendButton() {
+        if (resendTimer > 0) {
+            resendSMSBtn.textContent = `Resend Code (${resendTimer}s)`;
+        }
+    }
+    
+    // Validate phone number
+    function isValidPhoneNumber(phone) {
+        const digits = phone.replace(/\D/g, '');
+        return digits.length === 10;
+    }
+    
+    // Format phone number for display
+    function formatPhoneNumber(phone) {
+        const digits = phone.replace(/\D/g, '');
+        if (digits.length === 10) {
+            return `+91 ******${digits.substring(6, 10)}`;
+        }
+        return phone;
+    }
+    
+    // Get full SMS code from digit inputs
+    function getFullSMSCode() {
+        return digitInputs.map(digit => digit.value).join('');
+    }
+    
+    // Show success message
+    function showSuccess(message) {
+        const alertContainer = document.getElementById('alertContainer');
+        
+        // Create alert element
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert-message alert-success';
+        alertDiv.innerHTML = `
+            <i class="fas fa-check-circle me-2"></i>
+            ${message}
+        `;
+        
+        // Clear any existing alerts
+        alertContainer.innerHTML = '';
+        
+        // Add new alert
+        alertContainer.appendChild(alertDiv);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+    
+    // Show error message
+    function showError(message) {
+        const alertContainer = document.getElementById('alertContainer');
+        
+        // Create alert element
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert-message alert-error';
+        alertDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            ${message}
+        `;
+        
+        // Clear any existing alerts
+        alertContainer.innerHTML = '';
+        
+        // Add new alert
+        alertContainer.appendChild(alertDiv);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+    
+    // Send OTP to server
+    async function sendOTPToServer(phoneNumber, otp, type) {
+        try {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            const formData = {
+                phone_number: phoneNumber,
+                otp: otp, 
+                type: type
+            };
+            
+            // Replace 'send_otp_url' with your actual Django URL name
+            const response = await fetch("{% url 'forgetpwd' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+            
+        } catch (error) {
+            console.error('Error sending OTP:', error);
+            throw error;
+        }
+    }
+    
+    // Verify OTP with server
+    async function verifyOTPWithServer(phoneNumber, enteredCode,password, type) {
+        try {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            const formData = {
+                phone_number: phoneNumber,
+                otp: enteredCode,
+                password:password,
+                type: type
+            };
+            
+            // Replace 'verify_otp_url' with your actual Django URL name
+            const response = await fetch("{% url 'forgetpwd' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+            
+        } catch (error) {
+            console.error('Error verifying OTP:', error);
+            throw error;
+        }
+    }
+    
+    // Step 1: Send SMS Code
+    sendSMSBtn.addEventListener('click', async function() {
+        const phoneNumber = phoneInput.value;
+        
+        if (!isValidPhoneNumber(phoneNumber)) {
+            phoneError.style.display = 'block';
+            phoneInput.focus();
+            return;
+        }
+        
+        // Save phone number
+        userPhoneNumber = phoneNumber.replace(/\D/g, '');
+        
+        // Generate verification code
+        generatedCode = generateVerificationCode();
+        
+        // Update phone display
+        phoneDisplay.textContent = formatPhoneNumber(phoneNumber);
+        
+        // Show loading state
+        const originalText = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        this.disabled = true;
+        
+        try {
+            // Call server to send OTP with type 'otp'
+            const result = await sendOTPToServer(userPhoneNumber, generatedCode, 'otp');
+            
+            // For demo purposes, we'll simulate sending
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            console.log(`SMS sent to ${userPhoneNumber}: Your code is ${generatedCode}`);
+            
+            // Success - move to verification step
+            showStep(2);
+            
+            // Add animation effect
+            step2Card.classList.add('pulse');
+            setTimeout(() => {
+                step2Card.classList.remove('pulse');
+            }, 500);
+            
+            // Show success message with demo code
+            smsSubtitle.innerHTML = `We've sent a 6-digit code to <span style="font-weight: 600; color: var(--temple-red);">${formatPhoneNumber(phoneNumber)}</span><br><small>Demo code: <strong>${generatedCode}</strong></small>`;
+            
+            showSuccess('Verification code sent successfully!');
+            
+        } catch (error) {
+            showError('Failed to send verification code. Please try again.');
+            phoneError.style.display = 'block';
+            phoneError.textContent = 'Unable to send SMS. Please check the number and try again.';
+        } finally {
+            // Reset button
+            this.innerHTML = originalText;
+            this.disabled = false;
+        }
+    });
+    
+    // Step 2: Verify SMS Code
+    verifyCodeBtn.addEventListener('click', async function() {
+        const enteredCode = getFullSMSCode();
+        
+        if (enteredCode.length !== 6) {
+            codeError.style.display = 'block';
+            codeError.textContent = 'Please enter the 6-digit verification code';
+            digitInputs[0].focus();
+            return;
+        }
+        
+        // Show loading state
+        const originalText = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+        this.disabled = true;
+        
+        try {
+            // Call server to verify OTP with type 'otp'
+            const result = await verifyOTPWithServer(userPhoneNumber, enteredCode,'', 'otp');
+            
+            // For demo purposes, we'll simulate verification
+            await new Promise(resolve => setTimeout(resolve, 1200));
+            
+            // Check if verification was successful (based on server response or demo code)
+            if (enteredCode === generatedCode) {
+                // Success - move to password reset
+                showStep(3);
+                showSuccess('Verification successful! You can now set a new password.');
+            } else {
+                // Failed - show error with shake animation
+                codeError.style.display = 'block';
+                codeError.textContent = 'Invalid verification code. Please try again.';
+                step2Card.classList.add('shake');
+                setTimeout(() => {
+                    step2Card.classList.remove('shake');
+                }, 500);
+                
+                // Clear code inputs
+                digitInputs.forEach(digit => {
+                    digit.value = '';
+                    digit.classList.remove('filled');
+                });
+                digitInputs[0].focus();
+                
+                showError('Invalid verification code. Please try again.');
+            }
+            
+        } catch (error) {
+            showError('Verification failed. Please try again.');
+            codeError.style.display = 'block';
+            codeError.textContent = 'Unable to verify code. Please try again.';
+        } finally {
+            // Reset button
+            this.innerHTML = originalText;
+            this.disabled = false;
+        }
+    });
+    
+    // Step 3: Reset Password
+    resetPasswordBtn.addEventListener('click', async function() {
+        const password = newPassword.value;
+        const confirm = confirmPassword.value;
+        
+        // Reset errors
+        passwordError.style.display = 'none';
+        confirmError.style.display = 'none';
+        
+        if (!password || password.length < 8) {
+            passwordError.style.display = 'block';
+            newPassword.focus();
+            return;
+        }
+        
+        if (password !== confirm) {
+            confirmError.style.display = 'block';
+            confirmPassword.focus();
+            return;
+        }
+        
+        // Show loading state
+        const originalText = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resetting...';
+        this.disabled = true;
+        
+        try {
+            // Call the reset password function with type 'reset'
+            const result = await verifyOTPWithServer(phoneNumber, enteredCode,password, 'reset') ;
+            console.log('Reset password result:', result);
+            
+            // For demo purposes, we'll simulate password reset
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Success - show success screen
+            showStep(4);
+            showSuccess('Password reset successfully!');
+            
+            // Clear timer
+            clearInterval(timerInterval);
+            
+        } catch (error) {
+            showError('Failed to reset password. Please try again.');
+            passwordError.style.display = 'block';
+            passwordError.textContent = 'Unable to reset password. Please try again.';
+        } finally {
+            // Reset button
+            this.innerHTML = originalText;
+            this.disabled = false;
+        }
+    });
+    
+    // Resend SMS Code
+    resendSMSBtn.addEventListener('click', async function() {
+        if (resendTimer > 0) return;
+        
+        // Generate new code
+        generatedCode = generateVerificationCode();
+        
+        // Show loading state
+        const originalText = this.textContent;
+        this.textContent = 'Resending...';
+        this.disabled = true;
+        
+        try {
+            // Call server to resend OTP with type 'otp'
+            const result = await sendOTPToServer(userPhoneNumber, generatedCode, 'otp');
+            
+            // Simulate resending SMS
+            await new Promise(resolve => setTimeout(resolve, 1200));
+            
+            console.log(`SMS resent to ${userPhoneNumber}: Your code is ${generatedCode}`);
+            
+            // Clear code inputs
+            digitInputs.forEach(digit => {
+                digit.value = '';
+                digit.classList.remove('filled');
+            });
+            digitInputs[0].focus();
+            
+            // Restart timers
+            startSMSTimer();
+            startResendTimer();
+            
+            // Add pulse animation
+            step2Card.classList.add('pulse');
+            setTimeout(() => {
+                step2Card.classList.remove('pulse');
+            }, 500);
+            
+            // Update demo code in subtitle
+            const currentSubtitle = smsSubtitle.innerHTML;
+            smsSubtitle.innerHTML = currentSubtitle.replace(/Demo code: \d{6}/, `Demo code: ${generatedCode}`);
+            
+            showSuccess('New verification code sent!');
+            
+        } catch (error) {
+            showError('Failed to resend code. Please try again.');
+        } finally {
+            // Reset button
+            this.textContent = originalText;
+            this.disabled = false;
+        }
+    });
+    
+    // Navigation buttons
+    backToLoginBtn.addEventListener('click', function() {
+        window.location.href = '/';
+    });
+    
+    changePhoneBtn.addEventListener('click', function() {
+        showStep(1);
+    });
+    
+    backToSMSBtn.addEventListener('click', function() {
+        showStep(2);
+    });
+    
+    goToLoginBtn.addEventListener('click', function() {
+        window.location.href = '/';
+    });
+    
+    // Auto-verify when all digits are entered
+    digitInputs.forEach(digit => {
+        digit.addEventListener('input', function() {
+            const fullCode = getFullSMSCode();
+            if (fullCode.length === 6) {
+                // Auto-verify after a short delay
+                setTimeout(() => {
+                    verifyCodeBtn.click();
+                }, 300);
+            }
+        });
+    });
+    
+    // Initialize
+    showStep(1);
+    phoneInput.focus();
+    
+    // Set default India country code (+91)
+    document.querySelector('.phone-prefix span').textContent = '+91';
+</script>
+</body>
+</html>

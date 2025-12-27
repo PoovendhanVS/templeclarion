@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Billing Screen with Product Database</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Select2 for enhanced dropdowns -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .invoice-card {
+            max-width: 80%;
+            margin: 30px auto;
+            border-radius: 15px;
+            overflow: hidden;
+            border: none;
+        }
+        .card-header {
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px 30px;
+        }
+        .card-body {
+            padding: 30px;
+        }
+        .table th {
+            font-weight: 600;
+            color: #495057;
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .table td, .table th {
+            padding: 15px;
+            vertical-align: middle;
+        }
+        .table tbody tr:hover {
+            background-color: rgba(13, 110, 253, 0.03);
+        }
+        .summary-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid #dee2e6;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        .summary-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .btn-action {
+            min-width: 120px;
+            padding: 10px 20px;
+            font-weight: 600;
+        }
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .invoice-title {
+            color: #0d6efd;
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+        .invoice-meta {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .meta-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        .meta-item label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        .form-control:focus, .select2-container--default .select2-selection--single:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        .product-select {
+            width: 100%;
+        }
+        .select2-container--default .select2-selection--single {
+            height: 38px;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 38px;
+            padding-left: 12px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px;
+        }
+        .product-details {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        .product-code {
+            background-color: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .stock-status {
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .in-stock {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        .low-stock {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .out-of-stock {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .delete-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .product-management {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .product-info-row {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .invoice-card, .invoice-card * {
+                visibility: visible;
+            }
+            .invoice-card {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                box-shadow: none;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 15px;
+            }
+            .invoice-meta {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .meta-item {
+                min-width: 100%;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+            .btn-action {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="card invoice-card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Billing / Invoice System</h5>
+            <div class="d-flex gap-2">
+                <button class="btn btn-light btn-sm no-print" onclick="printInvoice()">
+                    <i class="fas fa-print me-1"></i> Print
+                </button>
+                <button class="btn btn-light btn-sm no-print" onclick="saveInvoice()">
+                    <i class="fas fa-save me-1"></i> Submit
+                </button>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <!-- Invoice Header -->
+            <div class="invoice-header">
+                <div>
+                    <h1 class="invoice-title">INVOICE</h1>
+                    <p class="text-muted mb-0">Create and manage your invoices</p>
+                </div>
+                <div class="text-end">
+                    <h5 class="mb-0">Invoice #: <span class="text-primary">INV-<span id="invoiceNumber">001</span></span></h5>
+                    <p class="text-muted mb-0">Date: <span id="invoiceDate">Loading...</span></p>
+                </div>
+            </div>
+
+            <!-- Invoice Meta Information -->
+            <div class="invoice-meta">
+                <div class="meta-item">
+                    <label for="customerName">Customer Name</label>
+                    <input type="text" class="form-control" id="customerName" placeholder="Enter customer name">
+                </div>
+                <div class="meta-item">
+                    <label for="customerPhone">Phone Number</label>
+                    <input type="text" class="form-control" id="customerPhone" placeholder="Enter phone number">
+                </div>
+                <div class="meta-item">
+                    <label for="customerEmail">Email Address</label>
+                    <input type="email" class="form-control" id="customerEmail" placeholder="Enter email address">
+                </div>
+            </div>
+
+           
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-end align-items-center gap-2 mb-4 no-print">
+
+            <!-- Search (placed before Add) -->
+            <div class="input-group" style="width: 250px;">
+                <input
+                    type="text" class="form-control" id="productSearch" placeholder="Search products...">
+                <button
+                    class="btn btn-outline-primary" type="button" onclick="searchProducts()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+
+            <!-- Add -->
+            <button class="btn btn-primary btn-action" onclick="addRow()">
+                <i class="fas fa-plus-circle me-1"></i> Add
+            </button>
+
+            <!-- Calculate -->
+            <button class="btn btn-success btn-action" onclick="calculateTotal()">
+                <i class="fas fa-calculator me-1"></i> Calculate
+            </button>
+
+            <!-- Clear -->
+            <button class="btn btn-warning btn-action" onclick="clearAll()">
+                <i class="fas fa-eraser me-1"></i> Clear All
+            </button>
+
+        </div>
+
+
+            <!-- Billing Table -->
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered align-middle" id="billingTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 40%">Product / Service Description</th>
+                            <th style="width: 15%">Quantity</th>
+                            <th style="width: 20%">Unit Price (₹)</th>
+                            <th style="width: 20%">Amount (₹)</th>
+                            <th style="width: 5%" class="no-print">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="billingTableBody">
+                        <!-- Rows will be added dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Invoice Summary -->
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes / Terms</label>
+                        <textarea class="form-control" id="notes" rows="3" placeholder="Add any notes or terms for this invoice...">Payment due within 30 days. Please include invoice number with payment.</textarea>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="summary-card">
+                        <h5 class="mb-3">Invoice Summary</h5>
+                        
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="summary-item">
+                                    <span>Subtotal:</span>
+                                    <span>₹ <span id="subtotal">0.00</span></span>
+                                </div>
+                                
+                                <div class="summary-item">
+                                    <div class="d-flex align-items-center">
+                                        <span>Tax:</span>
+                                        <div class="ms-2 d-flex">
+                                            <input type="number" id="taxRate" class="form-control form-control-sm" style="width: 70px;" value="18" min="0" max="100">
+                                            <span class="ms-1">%</span>
+                                        </div>
+                                    </div>
+                                    <span>₹ <span id="taxAmount">0.00</span></span>
+                                </div>
+                                
+                                <div class="summary-item">
+                                    <div class="d-flex align-items-center">
+                                        <span>Discount:</span>
+                                        <div class="ms-2 d-flex">
+                                            <input type="number" id="discountRate" class="form-control form-control-sm" style="width: 70px;" value="0" min="0" max="100">
+                                            <span class="ms-1">%</span>
+                                        </div>
+                                    </div>
+                                    <span>₹ <span id="discountAmount">0.00</span></span>
+                                </div>
+                            
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="summary-item summary-total">
+                                    <span>Total Amount:</span>
+                                    <span>₹ <span id="totalAmount">0.00</span></span>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <button class="btn btn-primary w-100 btn-action" onclick="generateInvoice()">
+                                        <i class="fas fa-file-invoice-dollar me-1"></i> Generate Invoice
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-footer text-center text-muted no-print">
+            <small>Billing System v1.0 • All amounts in Indian Rupees (₹)</small>
+        </div>
+    </div>
+</div>
+
+<!-- Add Product Modal -->
+<!-- <div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="mb-3">
+                        <label class="form-label">Product Name *</label>
+                        <input type="text" class="form-control" id="newProductName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Product Code</label>
+                        <input type="text" class="form-control" id="newProductCode" placeholder="Auto-generated">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Price (₹) *</label>
+                            <input type="number" class="form-control" id="newProductPrice" min="0" step="0.01" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Stock Quantity</label>
+                            <input type="number" class="form-control" id="newProductStock" min="0" value="10">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="newProductCategory">
+                            <option value="Electronics">Electronics</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Groceries">Groceries</option>
+                            <option value="Books">Books</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addNewProduct()">Add Product</button>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<!-- jQuery and Select2 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    // Product Database (Simulating a data source)
+    let products = [
+        { 
+            id: 1, 
+            name: "Laptop - Dell XPS 13", 
+            code: "PROD001", 
+            price: 89999,
+            stock: 15,
+            category: "Electronics"
+        },
+        { 
+            id: 2, 
+            name: "Wireless Mouse", 
+            code: "PROD002", 
+            price: 1299,
+            stock: 50,
+            category: "Accessories"
+        },
+        { 
+            id: 3, 
+            name: "Mechanical Keyboard", 
+            code: "PROD003", 
+            price: 4599,
+            stock: 25,
+            category: "Accessories"
+        },
+        { 
+            id: 4, 
+            name: "Monitor 24-inch", 
+            code: "PROD004", 
+            price: 15999,
+            stock: 10,
+            category: "Electronics"
+        },
+        { 
+            id: 5, 
+            name: "Webcam HD", 
+            code: "PROD005", 
+            price: 3299,
+            stock: 0,
+            category: "Electronics"
+        },
+        { 
+            id: 6, 
+            name: "Laptop Stand", 
+            code: "PROD006", 
+            price: 2199,
+            stock: 30,
+            category: "Accessories"
+        },
+        { 
+            id: 7, 
+            name: "USB-C Hub", 
+            code: "PROD007", 
+            price: 3499,
+            stock: 40,
+            category: "Accessories"
+        },
+        { 
+            id: 8, 
+            name: "Website Design Service", 
+            code: "SERV001", 
+            price: 15000,
+            stock: 999,
+            category: "Services"
+        },
+        { 
+            id: 9, 
+            name: "Web Hosting (Annual)", 
+            code: "SERV002", 
+            price: 5000,
+            stock: 999,
+            category: "Services"
+        },
+        { 
+            id: 10, 
+            name: "Domain Registration", 
+            code: "SERV003", 
+            price: 899,
+            stock: 999,
+            category: "Services"
+        }
+    ];
+
+    let nextProductId = 11;
+    let rowCounter = 0;
+
+    // Initialize invoice
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set current date
+        const now = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('invoiceDate').textContent = now.toLocaleDateString('en-IN', options);
+        
+        // Generate random invoice number
+        const invNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+        document.getElementById('invoiceNumber').textContent = invNum;
+        
+        // Add initial rows
+        addRow();
+        
+        // Set sample customer data
+        document.getElementById('customerName').value = "John Smith";
+        document.getElementById('customerPhone').value = "+91 98765 43210";
+        document.getElementById('customerEmail').value = "john.smith@example.com";
+        
+        // Calculate initial total
+        calculateTotal();
+    });
+    
+    // Add new row to the table
+    function addRow() {
+        const tableBody = document.getElementById('billingTableBody');
+        rowCounter++;
+        const rowId = `row_${rowCounter}`;
+        
+        const newRow = document.createElement('tr');
+        newRow.id = rowId;
+        newRow.innerHTML = `
+            <td>
+                <select class="product-select" id="productSelect_${rowId}" onchange="updateProductDetails('${rowId}')">
+                    <option value="">Select Product...</option>
+                </select>
+                <div class="product-info-row mt-1" id="productInfo_${rowId}" style="display:none"></div>
+            </td>
+            <td>
+                <input type="number" class="form-control text-end qty" id="qty_${rowId}" value="1" min="1" 
+                       onchange="calculateRowTotal('${rowId}')" oninput="calculateRowTotal('${rowId}')">
+            </td>
+            <td>
+                <input type="number" class="form-control text-end price" id="price_${rowId}" value="0" min="0" step="0.01" readonly>
+            </td>
+            <td>
+                <input type="text" class="form-control text-end amount" id="amount_${rowId}" value="0.00" readonly>
+            </td>
+            <td class="text-center no-print">
+                <button class="btn btn-danger btn-sm delete-btn" onclick="removeRow('${rowId}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        
+        tableBody.appendChild(newRow);
+        
+        // Initialize Select2 for the new row
+        $(`#productSelect_${rowId}`).select2({
+            placeholder: "Search for a product...",
+            allowClear: true,
+            data: products.map(product => ({
+                id: product.id,
+                text: `${product.name} - ₹${product.price.toLocaleString()}`,
+                price: product.price,
+                stock: product.stock,
+                code: product.code,
+                category: product.category
+            }))
+        });
+    }
+    
+    // Update product details when a product is selected
+    function updateProductDetails(rowId) {
+        const selectElement = $(`#productSelect_${rowId}`);
+        const selectedProductId = selectElement.val();
+        const productInfoDiv = document.getElementById(`productInfo_${rowId}`);
+        
+        if (selectedProductId) {
+            const product = products.find(p => p.id == selectedProductId);
+            if (product) {
+                // Update price field
+                document.getElementById(`price_${rowId}`).value = product.price;
+                
+                // Show product info
+                const stockStatus = getStockStatus(product.stock);
+                productInfoDiv.innerHTML = `
+                    <div class="d-flex justify-content-between">
+                        <span class="product-code">${product.code}</span>
+                        <span class="stock-status ${stockStatus.class}">${stockStatus.text}</span>
+                    </div>
+                    <div class="mt-1">
+                        <small>Category: ${product.category}</small>
+                    </div>
+                `;
+                
+                // Calculate row total
+                calculateRowTotal(rowId);
+            }
+        } else {
+            // Clear if no product selected
+            document.getElementById(`price_${rowId}`).value = 0;
+            document.getElementById(`amount_${rowId}`).value = '0.00';
+            productInfoDiv.innerHTML = '';
+        }
+    }
+    
+    // Calculate total for a single row
+    function calculateRowTotal(rowId) {
+        const qty = parseFloat(document.getElementById(`qty_${rowId}`).value) || 0;
+        const price = parseFloat(document.getElementById(`price_${rowId}`).value) || 0;
+        const amount = qty * price;
+        
+        document.getElementById(`amount_${rowId}`).value = amount.toFixed(2);
+        
+        // Calculate total whenever a row is updated
+        calculateTotal();
+    }
+    
+    // Remove row from the table
+    function removeRow(rowId) {
+        const row = document.getElementById(rowId);
+        if (row && document.querySelectorAll('#billingTableBody tr').length > 0) {
+            row.remove();
+            calculateTotal();
+        } else if (row) {
+            alert("At least one row is required. Clear the row instead.");
+            clearRow(rowId);
+        }
+    }
+    
+    // Clear a specific row
+    function clearRow(rowId) {
+        $(`#productSelect_${rowId}`).val('').trigger('change');
+        document.getElementById(`qty_${rowId}`).value = 1;
+        document.getElementById(`price_${rowId}`).value = 0;
+        document.getElementById(`amount_${rowId}`).value = '0.00';
+        document.getElementById(`productInfo_${rowId}`).innerHTML = '';
+        calculateTotal();
+    }
+    
+    // Clear all rows
+    function clearAll() {
+        if (confirm("Are you sure you want to clear all items?")) {
+            const rows = document.querySelectorAll('#billingTableBody tr');
+            rows.forEach(row => {
+                const rowId = row.id;
+                clearRow(rowId);
+                removeRow(rowId);
+            });
+            calculateTotal();
+        }
+    }
+    
+    // Calculate total invoice amount
+    function calculateTotal() {
+        let subtotal = 0;
+        
+        // Calculate subtotal from all rows
+        const amountInputs = document.querySelectorAll('.amount');
+        amountInputs.forEach(input => {
+            subtotal += parseFloat(input.value) || 0;
+        });
+        
+        // Get tax and discount rates
+        const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+        const discountRate = parseFloat(document.getElementById('discountRate').value) || 0;
+        
+        // Calculate tax and discount amounts
+        const taxAmount = (subtotal * taxRate) / 100;
+        const discountAmount = (subtotal * discountRate) / 100;
+        
+        // Calculate final total
+        const total = subtotal + taxAmount - discountAmount;
+        
+        // Update display
+        document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+        document.getElementById('taxAmount').textContent = taxAmount.toFixed(2);
+        document.getElementById('discountAmount').textContent = discountAmount.toFixed(2);
+        document.getElementById('totalAmount').textContent = total.toFixed(2);
+        
+        return total;
+    }
+    
+    // Get stock status
+    function getStockStatus(stock) {
+        if (stock > 20) {
+            return { text: "In Stock", class: "in-stock" };
+        } else if (stock > 0) {
+            return { text: "Low Stock", class: "low-stock" };
+        } else {
+            return { text: "Out of Stock", class: "out-of-stock" };
+        }
+    }
+    
+    // Search products
+    function searchProducts() {
+        const searchTerm = document.getElementById('productSearch').value.toLowerCase();
+        if (searchTerm) {
+            const filteredProducts = products.filter(product => 
+                product.name.toLowerCase().includes(searchTerm) ||
+                product.code.toLowerCase().includes(searchTerm) ||
+                product.category.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredProducts.length > 0) {
+                alert(`Found ${filteredProducts.length} product(s):\n\n` +
+                      filteredProducts.map(p => `${p.name} (${p.code}) - ₹${p.price}`).join('\n'));
+            } else {
+                alert('No products found matching your search.');
+            }
+        }
+    }
+    
+    // Open add product modal
+    function openAddProductModal() {
+        // Generate product code if not provided
+        const nextCode = `PROD${String(nextProductId).padStart(3, '0')}`;
+        document.getElementById('newProductCode').value = nextCode;
+        
+        const modal = new bootstrap.Modal(document.getElementById('addProductModal'));
+        modal.show();
+    }
+    
+    // Add new product
+    function addNewProduct() {
+        const name = document.getElementById('newProductName').value.trim();
+        const code = document.getElementById('newProductCode').value.trim();
+        const price = parseFloat(document.getElementById('newProductPrice').value);
+        const stock = parseInt(document.getElementById('newProductStock').value);
+        const category = document.getElementById('newProductCategory').value;
+        
+        if (!name) {
+            alert('Product name is required');
+            return;
+        }
+        
+        if (!price || price < 0) {
+            alert('Please enter a valid price');
+            return;
+        }
+        
+        // Create new product
+        const newProduct = {
+            id: nextProductId++,
+            name: name,
+            code: code || `PROD${String(nextProductId - 1).padStart(3, '0')}`,
+            price: price,
+            stock: stock || 0,
+            category: category
+        };
+        
+        // Add to products array
+        products.push(newProduct);
+        
+        // Update all dropdowns
+        updateAllProductDropdowns();
+        
+        // Close modal and reset form
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addProductModal'));
+        modal.hide();
+        document.getElementById('productForm').reset();
+        
+        alert(`Product "${name}" added successfully!`);
+    }
+    
+    // Update all product dropdowns
+    function updateAllProductDropdowns() {
+        const productSelects = document.querySelectorAll('.product-select');
+        productSelects.forEach(select => {
+            const select2Instance = $(select).data('select2');
+            if (select2Instance) {
+                // Update the Select2 instance with new data
+                $(select).empty().select2({
+                    placeholder: "Search for a product...",
+                    allowClear: true,
+                    data: products.map(product => ({
+                        id: product.id,
+                        text: `${product.name} - ₹${product.price.toLocaleString()}`,
+                        price: product.price,
+                        stock: product.stock,
+                        code: product.code,
+                        category: product.category
+                    }))
+                });
+            }
+        });
+    }
+    
+    // Generate invoice summary
+    function generateInvoice() {
+        const customerName = document.getElementById('customerName').value;
+        const total = calculateTotal();
+        
+        if (!customerName.trim()) {
+            alert("Please enter customer name.");
+            document.getElementById('customerName').focus();
+            return;
+        }
+        
+        if (total <= 0) {
+            alert("Please add items to the invoice before generating.");
+            return;
+        }
+        
+        // Show invoice preview
+        const invoiceDetails = `
+Customer: ${customerName}
+Invoice #: INV-${document.getElementById('invoiceNumber').textContent}
+Date: ${document.getElementById('invoiceDate').textContent}
+Total Amount: ₹ ${total.toFixed(2)}
+        `;
+        
+        alert(`Invoice Generated Successfully!\n\n${invoiceDetails}\n\nClick "Print" to print the invoice.`);
+    }
+    
+    // Print invoice
+    function printInvoice() {
+        // Calculate total before printing
+        calculateTotal();
+        
+        // Update print-friendly elements
+        const noPrintElements = document.querySelectorAll('.no-print');
+        noPrintElements.forEach(el => {
+            el.classList.add('d-none');
+        });
+        
+        // Trigger print
+        window.print();
+        
+        // Restore no-print elements
+        noPrintElements.forEach(el => {
+            el.classList.remove('d-none');
+        });
+    }
+    
+    // Save invoice
+    function saveInvoice() {
+        calculateTotal();
+        
+        // Collect invoice data
+        const customerName = document.getElementById('customerName').value || "Unknown Customer";
+        const invoiceNum = document.getElementById('invoiceNumber').textContent;
+        const total = document.getElementById('totalAmount').textContent;
+        
+        // Collect line items
+        const lineItems = [];
+        const rows = document.querySelectorAll('#billingTableBody tr');
+        rows.forEach(row => {
+            const rowId = row.id;
+            const productSelect = $(`#productSelect_${rowId}`);
+            const productId = productSelect.val();
+            
+            if (productId) {
+                const product = products.find(p => p.id == productId);
+                const qty = document.getElementById(`qty_${rowId}`).value;
+                const price = document.getElementById(`price_${rowId}`).value;
+                const amount = document.getElementById(`amount_${rowId}`).value;
+                
+                lineItems.push({
+                    product: product.name,
+                    code: product.code,
+                    qty: qty,
+                    price: price,
+                    amount: amount
+                });
+            }
+        });
+        
+        // Show invoice summary
+        let invoiceSummary = `Invoice INV-${invoiceNum} for ${customerName}\n`;
+        invoiceSummary += `Date: ${document.getElementById('invoiceDate').textContent}\n`;
+        invoiceSummary += `Total: ₹ ${total}\n\n`;
+        invoiceSummary += 'Items:\n';
+        
+        lineItems.forEach((item, index) => {
+            invoiceSummary += `${index + 1}. ${item.product} (${item.code}) - ${item.qty} x ₹${item.price} = ₹${item.amount}\n`;
+        });
+        
+        alert(`Invoice saved successfully!\n\n${invoiceSummary}`);
+        
+        // Generate new invoice number for next invoice
+        const newInvNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+        document.getElementById('invoiceNumber').textContent = newInvNum;
+        
+        // Clear current invoice (optional)
+        if (confirm('Clear current invoice and start new one?')) {
+            clearAll();
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerPhone').value = '';
+            document.getElementById('customerEmail').value = '';
+        }
+    }
+    
+    // Add event listeners for tax and discount rate changes
+    document.getElementById('taxRate').addEventListener('input', calculateTotal);
+    document.getElementById('discountRate').addEventListener('input', calculateTotal);
+</script>
+
+</body>
+</html>

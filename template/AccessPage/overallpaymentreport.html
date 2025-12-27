@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Report Dashboard</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --warning-color: #f8961e;
+            --light-bg: #f8fafc;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Header Styling */
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .page-subtitle {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        .stats-summary {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0.75rem 1.25rem;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            min-width: 120px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* Main Container */
+        .main-container {
+            padding: 0 15px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .filter-section:hover {
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .filter-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-title i {
+            font-size: 1.1rem;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .form-control, .form-select {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.625rem 1rem;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+
+        /* Action Buttons */
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            padding: 0.625rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(67, 97, 238, 0.2);
+        }
+
+        .btn-outline-secondary {
+            border: 1.5px solid #e2e8f0;
+            padding: 0.625rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-outline-secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        /* Table Styling */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .table-container:hover {
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+        }
+
+        .table-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .table-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin: 0;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            margin: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+
+        .table thead th {
+            background-color: #f8fafc;
+            color: #4a5568;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .table tbody tr {
+            transition: var(--transition);
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.03);
+        }
+
+        .table tbody td {
+            padding: 1rem 1.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.85rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            gap: 0.4rem;
+        }
+
+        .badge-success {
+            background-color: rgba(76, 201, 240, 0.15);
+            color: #0c5460;
+        }
+
+        .badge-failed {
+            background-color: rgba(247, 37, 133, 0.15);
+            color: #721c24;
+        }
+
+        .badge-pending {
+            background-color: rgba(248, 150, 30, 0.15);
+            color: #856404;
+        }
+
+        .badge-refunded {
+            background-color: rgba(108, 117, 125, 0.15);
+            color: #383d41;
+        }
+
+        /* Action Icons */
+        .action-icons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            color: #718096;
+            border: 1px solid #e2e8f0;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Cards */
+        .mobile-cards {
+            display: none;
+        }
+
+        .mobile-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .mobile-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .card-amount {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .card-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        /* Pagination */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .page-link {
+            color: var(--primary-color);
+            border-radius: 8px;
+            padding: 0.5rem 0.9rem;
+            border: 1.5px solid #e2e8f0;
+            transition: var(--transition);
+        }
+
+        .page-link:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+            color: var(--secondary-color);
+        }
+
+        /* Export Section */
+        .export-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: var(--transition);
+            border: 1.5px solid #e2e8f0;
+            background: white;
+            color: #4a5568;
+        }
+
+        .export-btn:hover {
+            border-color: var(--primary-color);
+            background: rgba(67, 97, 238, 0.05);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .export-btn.pdf {
+            color: #d32f2f;
+        }
+
+        .export-btn.excel {
+            color: #217346;
+        }
+
+        .export-btn.csv {
+            color: #ff9800;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            color: #718096;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .stats-summary {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .stat-item {
+                flex: 1;
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .stats-summary {
+                justify-content: flex-start;
+                margin-top: 1.5rem;
+            }
+            
+            .table-wrapper {
+                display: none;
+            }
+            
+            .mobile-cards {
+                display: block;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+            }
+            
+            .form-group {
+                width: 100%;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .table-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .card-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-summary {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .stat-item {
+                width: 100%;
+            }
+            
+            .table-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .action-icons {
+                justify-content: flex-start;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="dashboard-header">
+        <div class="main-container">
+            <div class="header-content">
+                <div>
+                    <h1 class="page-title">Transaction Report Dashboard</h1>
+                    <p class="page-subtitle">Monitor and analyze all your transactions in real-time</p>
+                </div>
+                <div class="stats-summary">
+                    <div class="stat-item">
+                        <span class="stat-value" id="totalAmount">₹12,450</span>
+                        <span class="stat-label">Total Amount</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="successCount">42</span>
+                        <span class="stat-label">Success</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="failedCount">5</span>
+                        <span class="stat-label">Failed</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Filter Section -->
+        <section class="filter-section fade-in">
+            <h3 class="filter-title"><i class="fas fa-filter"></i> Filter Transactions</h3>
+            <div class="filter-row">
+                <div class="form-group">
+                    <label class="form-label" for="fromDate">From Date</label>
+                    <input type="date" class="form-control" id="fromDate" value="2025-01-01">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="toDate">To Date</label>
+                    <input type="date" class="form-control" id="toDate" value="2025-01-15">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="statusFilter">Status</label>
+                    <select class="form-select" id="statusFilter">
+                        <option value="all">All Status</option>
+                        <option value="success">Success</option>
+                        <option value="failed">Failed</option>
+                        <option value="pending">Pending</option>
+                        <option value="refunded">Refunded</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="searchInput">Search Name/Reference</label>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search transactions...">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary w-100" onclick="filterTable()">
+                        <i class="fas fa-search me-2"></i> Search
+                    </button>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">
+                        <i class="fas fa-redo me-2"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Desktop Table -->
+        <section class="table-container fade-in">
+            <div class="table-header">
+                <h3 class="table-title">Transaction Details</h3>
+                <div class="table-actions">
+                    <div class="input-group" style="max-width: 250px;">
+                        <span class="input-group-text bg-transparent border-end-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0" id="tableSearch" placeholder="Quick search...">
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-sort-amount-down me-2"></i> Sort By
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="sortTable('date')">Date (Newest)</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortTable('amount')">Amount (High to Low)</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortTable('name')">Name (A to Z)</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <div class="table-responsive">
+                    <table class="table" id="reportTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Transaction ID</th>
+                                <th>Name</th>
+                                <th>Amount</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mobile Cards -->
+        <section class="mobile-cards fade-in" id="mobileCards">
+            <!-- Cards will be populated by JavaScript -->
+        </section>
+
+        <!-- Pagination -->
+        <div class="pagination-container">
+            <nav>
+                <ul class="pagination" id="pagination">
+                    <li class="page-item"><a class="page-link" href="#" onclick="changePage(1)">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#" onclick="changePage(2)">2</a></li>
+                    <li class="page-item active"><a class="page-link" href="#" onclick="changePage(3)">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#" onclick="changePage(4)">4</a></li>
+                    <li class="page-item"><a class="page-link" href="#" onclick="changePage(5)">5</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Export Section -->
+        <section class="export-section fade-in">
+            <h3 class="filter-title"><i class="fas fa-download"></i> Export Report</h3>
+            <div class="export-options">
+                <button class="export-btn pdf" onclick="exportReport('pdf')">
+                    <i class="fas fa-file-pdf"></i> Export as PDF
+                </button>
+                <button class="export-btn excel" onclick="exportReport('excel')">
+                    <i class="fas fa-file-excel"></i> Export as Excel
+                </button>
+                <button class="export-btn csv" onclick="exportReport('csv')">
+                    <i class="fas fa-file-csv"></i> Export as CSV
+                </button>
+                <button class="export-btn" onclick="printReport()">
+                    <i class="fas fa-print"></i> Print Report
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="main-container">
+            <p>&copy; 2025 Transaction Dashboard. All rights reserved.</p>
+            <p class="mt-2">Last updated: <span id="currentDateTime"></span></p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Sample transaction data
+        const transactions = [
+            { id: 1, date: "2025-01-10", transactionId: "TXN001234", name: "Ramesh Kumar", amount: 1500, method: "Credit Card", status: "success" },
+            { id: 2, date: "2025-01-12", transactionId: "TXN001235", name: "Suresh Patel", amount: 800, method: "UPI", status: "failed" },
+            { id: 3, date: "2025-01-11", transactionId: "TXN001236", name: "Priya Sharma", amount: 2500, method: "Net Banking", status: "success" },
+            { id: 4, date: "2025-01-13", transactionId: "TXN001237", name: "Amit Verma", amount: 1200, method: "Debit Card", status: "pending" },
+            { id: 5, date: "2025-01-09", transactionId: "TXN001238", name: "Neha Gupta", amount: 3500, method: "Wallet", status: "success" },
+            { id: 6, date: "2025-01-14", transactionId: "TXN001239", name: "Rajesh Singh", amount: 900, method: "Credit Card", status: "refunded" },
+            { id: 7, date: "2025-01-08", transactionId: "TXN001240", name: "Anjali Mehta", amount: 1800, method: "UPI", status: "success" },
+            { id: 8, date: "2025-01-15", transactionId: "TXN001241", name: "Vikram Yadav", amount: 2200, method: "Net Banking", status: "failed" }
+        ];
+
+        // Initialize table and cards
+        document.addEventListener('DOMContentLoaded', function() {
+            populateTable();
+            populateMobileCards();
+            updateStats();
+            updateDateTime();
+            
+            // Set current date as default "to" date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('toDate').value = today;
+            
+            // Add event listener for table search
+            document.getElementById('tableSearch').addEventListener('input', function() {
+                filterTable();
+            });
+            
+            // Add animation to elements
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+
+        function populateTable() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            
+            transactions.forEach(transaction => {
+                const row = document.createElement('tr');
+                
+                // Determine status badge
+                let statusBadge = '';
+                switch(transaction.status) {
+                    case 'success':
+                        statusBadge = '<span class="status-badge badge-success"><i class="fas fa-check-circle"></i> Success</span>';
+                        break;
+                    case 'failed':
+                        statusBadge = '<span class="status-badge badge-failed"><i class="fas fa-times-circle"></i> Failed</span>';
+                        break;
+                    case 'pending':
+                        statusBadge = '<span class="status-badge badge-pending"><i class="fas fa-clock"></i> Pending</span>';
+                        break;
+                    case 'refunded':
+                        statusBadge = '<span class="status-badge badge-refunded"><i class="fas fa-undo"></i> Refunded</span>';
+                        break;
+                }
+                
+                row.innerHTML = `
+                    <td><strong>${transaction.date}</strong></td>
+                    <td><code>${transaction.transactionId}</code></td>
+                    <td>${transaction.name}</td>
+                    <td><strong>₹${transaction.amount.toLocaleString()}</strong></td>
+                    <td>${transaction.method}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <div class="action-icons">
+                            <div class="action-btn" onclick="viewTransaction(${transaction.id})" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="action-btn" onclick="editTransaction(${transaction.id})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="action-btn" onclick="downloadReceipt(${transaction.id})" title="Download Receipt">
+                                <i class="fas fa-download"></i>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        function populateMobileCards() {
+            const mobileCards = document.getElementById('mobileCards');
+            mobileCards.innerHTML = '';
+            
+            transactions.forEach(transaction => {
+                // Determine status class
+                let statusClass = '';
+                switch(transaction.status) {
+                    case 'success': statusClass = 'badge-success'; break;
+                    case 'failed': statusClass = 'badge-failed'; break;
+                    case 'pending': statusClass = 'badge-pending'; break;
+                    case 'refunded': statusClass = 'badge-refunded'; break;
+                }
+                
+                const card = document.createElement('div');
+                card.className = 'mobile-card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h4 class="card-title">${transaction.name}</h4>
+                        <span class="card-amount">₹${transaction.amount.toLocaleString()}</span>
+                    </div>
+                    <div class="card-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Date</span>
+                            <span class="detail-value">${transaction.date}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Transaction ID</span>
+                            <span class="detail-value"><code>${transaction.transactionId}</code></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Payment Method</span>
+                            <span class="detail-value">${transaction.method}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status</span>
+                            <span class="status-badge ${statusClass}">
+                                ${transaction.status === 'success' ? '<i class="fas fa-check-circle"></i>' : 
+                                  transaction.status === 'failed' ? '<i class="fas fa-times-circle"></i>' :
+                                  transaction.status === 'pending' ? '<i class="fas fa-clock"></i>' :
+                                  '<i class="fas fa-undo"></i>'}
+                                ${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mt-3 d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-primary w-50" onclick="viewTransaction(${transaction.id})">
+                            <i class="fas fa-eye me-1"></i> View
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary w-50" onclick="downloadReceipt(${transaction.id})">
+                            <i class="fas fa-download me-1"></i> Receipt
+                        </button>
+                    </div>
+                `;
+                
+                mobileCards.appendChild(card);
+            });
+        }
+
+        function filterTable() {
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const tableSearch = document.getElementById('tableSearch').value.toLowerCase();
+            
+            const searchQuery = tableSearch || searchText;
+            
+            // Filter logic for table
+            const tableRows = document.querySelectorAll('#tableBody tr');
+            const mobileCards = document.querySelectorAll('.mobile-card');
+            
+            let successCount = 0;
+            let failedCount = 0;
+            let totalAmount = 0;
+            
+            tableRows.forEach((row, index) => {
+                const date = row.cells[0].textContent;
+                const name = row.cells[2].textContent.toLowerCase();
+                const statusBadge = row.cells[5].querySelector('.status-badge');
+                const status = statusBadge ? statusBadge.textContent.toLowerCase().trim() : '';
+                const amount = parseFloat(row.cells[3].textContent.replace('₹', '').replace(',', ''));
+                
+                let showRow = true;
+                
+                // Date filter
+                if (fromDate && date < fromDate) showRow = false;
+                if (toDate && date > toDate) showRow = false;
+                
+                // Status filter
+                if (statusFilter !== 'all' && !status.includes(statusFilter)) showRow = false;
+                
+                // Search filter
+                if (searchQuery && !name.includes(searchQuery)) showRow = false;
+                
+                row.style.display = showRow ? '' : 'none';
+                
+                // Update stats for visible rows
+                if (showRow) {
+                    totalAmount += amount;
+                    if (status.includes('success')) successCount++;
+                    if (status.includes('failed')) failedCount++;
+                }
+                
+                // Handle mobile cards
+                if (mobileCards[index]) {
+                    mobileCards[index].style.display = showRow ? 'block' : 'none';
+                }
+            });
+            
+            // Update stats
+            document.getElementById('totalAmount').textContent = `₹${totalAmount.toLocaleString()}`;
+            document.getElementById('successCount').textContent = successCount;
+            document.getElementById('failedCount').textContent = failedCount;
+        }
+
+        function resetFilters() {
+            document.getElementById('fromDate').value = '2025-01-01';
+            document.getElementById('toDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('statusFilter').value = 'all';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('tableSearch').value = '';
+            
+            filterTable();
+        }
+
+        function sortTable(criteria) {
+            // Sort transactions array
+            transactions.sort((a, b) => {
+                if (criteria === 'date') {
+                    return new Date(b.date) - new Date(a.date);
+                } else if (criteria === 'amount') {
+                    return b.amount - a.amount;
+                } else if (criteria === 'name') {
+                    return a.name.localeCompare(b.name);
+                }
+                return 0;
+            });
+            
+            // Repopulate table and cards
+            populateTable();
+            populateMobileCards();
+            filterTable(); // Reapply filters
+            
+            // Show feedback
+            showToast(`Sorted by ${criteria}`, 'info');
+        }
+
+        function updateStats() {
+            let totalAmount = 0;
+            let successCount = 0;
+            let failedCount = 0;
+            
+            transactions.forEach(transaction => {
+                totalAmount += transaction.amount;
+                if (transaction.status === 'success') successCount++;
+                if (transaction.status === 'failed') failedCount++;
+            });
+            
+            document.getElementById('totalAmount').textContent = `₹${totalAmount.toLocaleString()}`;
+            document.getElementById('successCount').textContent = successCount;
+            document.getElementById('failedCount').textContent = failedCount;
+        }
+
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-IN', options);
+        }
+
+        function changePage(pageNumber) {
+            // Update active page in pagination
+            const pageItems = document.querySelectorAll('.page-item');
+            pageItems.forEach(item => item.classList.remove('active'));
+            
+            pageItems[pageNumber - 1].classList.add('active');
+            
+            // In a real app, this would fetch new data for the page
+            showToast(`Loading page ${pageNumber}...`, 'info');
+        }
+
+        function viewTransaction(id) {
+            const transaction = transactions.find(t => t.id === id);
+            if (transaction) {
+                alert(`Transaction Details:\n\nID: ${transaction.transactionId}\nName: ${transaction.name}\nAmount: ₹${transaction.amount}\nDate: ${transaction.date}\nMethod: ${transaction.method}\nStatus: ${transaction.status}`);
+            }
+        }
+
+        function editTransaction(id) {
+            showToast(`Edit transaction ${id}`, 'warning');
+        }
+
+        function downloadReceipt(id) {
+            showToast(`Downloading receipt for transaction ${id}...`, 'success');
+        }
+
+        function exportReport(format) {
+            showToast(`Exporting report as ${format.toUpperCase()}...`, 'success');
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        function showToast(message, type = 'info') {
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-bg-${type} border-0 position-fixed bottom-0 end-0 m-3`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.parentElement.parentElement.remove()"></button>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

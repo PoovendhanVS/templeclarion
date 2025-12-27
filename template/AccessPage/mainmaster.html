@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Temple Donasstion System</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tamil Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- QR Code Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <style>
+        :root {
+            /* Common Colors */
+            --temple-red: #E53E3E;
+            --temple-dark-red: #C53030;
+            --temple-saffron: #F6AD55;
+            --temple-gold: #D69E2E;
+            --temple-orange: #DD6B20;
+            --temple-cream: #FEF3C7;
+            --temple-light: #FFF9DB;
+            --temple-dark: #2D3748;
+            --temple-success: #38A169;
+            --temple-purple: #805AD5;
+            --temple-border-radius: 12px;
+            --temple-shadow: 0 4px 15px rgba(229, 62, 62, 0.15);
+        }
+        
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, var(--temple-cream) 0%, #FEEBC8 100%);
+            min-height: 100vh;
+            color: var(--temple-dark);
+            padding: 10px;
+        }
+        a{
+            text-decoration: none;
+        }
+        .alink {
+            text-decoration: none !important;
+            color: inherit;
+        }
+        
+        /* Main Container */
+        .main-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* Header with Logo and Text */
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            padding: 0 5px;
+        }
+        
+        .app-logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--temple-red), var(--temple-orange));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 3px 10px rgba(229, 62, 62, 0.3);
+            flex-shrink: 0;
+        }
+        
+        .app-title {
+            flex: 1;
+        }
+        
+        .app-title h1 {
+            color: var(--temple-red);
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+        
+        .app-title p {
+            color: var(--temple-dark);
+            opacity: 0.8;
+            font-size: 13px;
+            line-height: 1.3;
+        }
+        
+        /* Progress Indicator */
+        .progress-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            background: #E2E8F0;
+            color: #718096;
+            transition: all 0.3s;
+        }
+        
+        .step-circle.completed {
+            background: var(--temple-success);
+            color: white;
+        }
+        
+        .step-circle.active {
+            background: var(--temple-red);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        
+        .step-label {
+            font-size: 11px;
+            color: #718096;
+            text-align: center;
+        }
+        
+        .step-line {
+            width: 40px;
+            height: 2px;
+            background: #E2E8F0;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Compact Tabs Navigation */
+        .tabs-container {
+            width: 100%;
+            margin-bottom: 15px;
+            background: white;
+            border-radius: var(--temple-border-radius);
+            overflow: hidden;
+            box-shadow: var(--temple-shadow);
+        }
+        
+        .compact-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 10px 5px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            color: #6c757d;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            position: relative;
+        }
+        
+        .tab-btn i {
+            font-size: 14px;
+        }
+        
+        .tab-btn.active {
+            color: var(--temple-red);
+            background: white;
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--temple-red);
+        }
+        
+        /* Tab Content Area */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: var(--temple-border-radius);
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: var(--temple-shadow);
+            border: 1px solid rgba(229, 62, 62, 0.1);
+        }
+        
+        /* Success Message */
+        .success-message {
+            background-color: #C6F6D5;
+            color: #22543D;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            text-align: center;
+            display: none;
+            border-left: 4px solid var(--temple-success);
+            font-size: 13px;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        /* Compact Form Styles */
+        .form-group {
+            margin-bottom: 12px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--temple-dark);
+            font-size: 13px;
+        }
+        
+        .form-label .required {
+            color: var(--temple-red);
+        }
+        
+        .input-container {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--temple-red);
+            font-size: 14px;
+            z-index: 2;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px 10px 10px 36px;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+            background-color: white;
+            color: var(--temple-dark);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--temple-red);
+            box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: #A0AEC0;
+            font-size: 13px;
+        }
+        
+        /* Tamil Name Container */
+        .tamil-name-container {
+            background-color: #FFF9DB;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 8px;
+            border-left: 4px solid var(--temple-saffron);
+            display: block;
+        }
+        
+        .tamil-name-input {
+            font-family: 'Noto Sans Tamil', sans-serif;
+            font-size: 14px;
+            background-color: white;
+        }
+        
+        /* Compact Selection Groups */
+        .selection-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .selection-option {
+            flex: 1;
+            min-width: calc(33.33% - 6px);
+        }
+        
+        .selection-btn {
+            width: 100%;
+            padding: 8px 4px;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 60px;
+        }
+        
+        .selection-btn i {
+            font-size: 16px;
+            margin-bottom: 4px;
+            color: #718096;
+        }
+        
+        .selection-btn span {
+            font-weight: 600;
+            font-size: 11px;
+            color: var(--temple-dark);
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .selection-btn.active {
+            border-color: var(--temple-red);
+            background-color: #FEF2F2;
+            box-shadow: 0 2px 8px rgba(229, 62, 62, 0.1);
+        }
+        
+        .selection-btn.active i {
+            color: var(--temple-red);
+        }
+        
+        /* Form Row for Two Columns */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        /* Tamil Name Display */
+        .tamil-display {
+            font-family: 'Noto Sans Tamil', sans-serif;
+            font-size: 14px;
+            color: var(--temple-dark);
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 5px;
+            border: 1px solid #dee2e6;
+            display: none;
+            text-align: center;
+        }
+        
+        .tamil-display.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        /* Compact Buttons */
+        .btn-next {
+            background: linear-gradient(to right, #10B981, #059669);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 8px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        
+        .btn-next:hover:not(:disabled) {
+            background: linear-gradient(to right, #059669, #047857);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        /* Compact Buttons Back*/
+        .btn-back {
+            background: linear-gradient(to right, #1067b9ac, #051396f7);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 8px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        
+        .btn-back:hover:not(:disabled) {
+            background: linear-gradient(to right, #1067b97a, #051396c9);
+            box-shadow: 0 4px 12px rgba(16, 98, 185, 0.3);
+        }
+        /* Compact Buttons */
+        .btn-qr {
+            background: linear-gradient(to right, #4166d5, #4166d5);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 5px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 1px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        
+        .btn-qr:hover:not(:disabled) {
+            background: linear-gradient(to right, #224fd6,#224fd6);
+            box-shadow: 0 4px 12px rgba(64, 172, 227, 0.3);
+        }
+        .btn-primary {
+            background: linear-gradient(to right, var(--temple-red), var(--temple-orange));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 8px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(to right, var(--temple-dark-red), var(--temple-red));
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        /* Error Messages */
+        .error-message {
+            color: var(--temple-red);
+            font-size: 11px;
+            margin-top: 4px;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        /* Donation Tab Styles */
+        .amount-selection {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .amount-btn {
+            padding: 10px 6px;
+            border: 2px solid #E2E8F0;
+            border-radius: 6px;
+            background: white;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--temple-dark);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .amount-btn.active {
+            border-color: var(--temple-red);
+            background-color: #FEF2F2;
+            color: var(--temple-red);
+            box-shadow: 0 2px 8px rgba(229, 62, 62, 0.1);
+        }
+        
+        .amount-custom {
+            grid-column: span 3;
+        }
+        
+        .custom-amount {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #E2E8F0;
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+            color: var(--temple-dark);
+        }
+        
+        /* Payment Method */
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .payment-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .payment-option.active {
+            border-color: var(--temple-red);
+            background-color: #FEF2F2;
+        }
+        
+        .payment-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 16px;
+            color: white;
+        }
+        
+        .payment-icon.upi {
+            background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+        }
+        
+        .payment-icon.cash {
+            background: linear-gradient(135deg, #10B981, #059669);
+        }
+        
+        .payment-info {
+            flex: 1;
+        }
+        .payment-display-style{
+            margin-right: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .payment-name {
+            font-weight: 600;
+            color: var(--temple-dark);
+            margin-bottom: 2px;
+            font-size: 13px;
+        }
+        
+        .payment-desc {
+            font-size: 11px;
+            color: #718096;
+        }
+        
+        /* Donation Summary */
+        .donation-summary {
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid var(--temple-saffron);
+        }
+        
+        .summary-title {
+            font-weight: 700;
+            color: var(--temple-dark);
+            margin-bottom: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed #E2E8F0;
+            font-size: 13px;
+        }
+        
+        .summary-label {
+            color: #718096;
+        }
+        
+        .summary-value {
+            font-weight: 600;
+            color: var(--temple-dark);
+        }
+        
+        .summary-total {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid var(--temple-saffron);
+        }
+        
+        .summary-total .summary-label {
+            color: var(--temple-red);
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        .summary-total .summary-value {
+            color: var(--temple-red);
+            font-weight: 800;
+            font-size: 16px;
+        }
+        
+        /* UPI QR Code Modal */
+        .upi-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            flex-direction: column;
+        }
+        
+        .upi-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .upi-modal-content {
+            background: white;
+            border-radius: var(--temple-border-radius);
+            padding: 20px;
+            width: 90%;
+            max-width: 350px;
+            max-height: 85vh;   /* Limit height to 80% of viewport */
+            overflow-y: auto;   /* Enable vertical scrolling if content exceeds max-height */
+            text-align: center;
+            box-shadow: var(--temple-shadow);
+            transform: translateY(-20px);
+            transition: transform 0.3s;
+            box-sizing: border-box;
+        }
+
+        /* Optional: smooth scrollbar for Webkit browsers */
+        .upi-modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .upi-modal-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .upi-modal-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+
+        .upi-modal-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Responsive tweaks for mobile */
+        @media (max-width: 480px) {
+            .upi-modal-content {
+                padding: 15px;
+                max-width: 95%;
+                max-height: 90vh;  /* Slightly taller for small screens */
+                transform: translateY(-10px);
+            }
+        }
+
+        
+        .upi-modal.show .upi-modal-content {
+            transform: translateY(0);
+        }
+        
+        .qr-code-container {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px auto;
+            display: inline-block;
+            border: 2px solid #E2E8F0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        #qr-code {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        .qr-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--temple-red), var(--temple-orange));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            position: absolute;
+            margin-top: -20px;
+        }
+        
+        .upi-details {
+            background: #F8FAFC;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 2px dashed #E2E8F0;
+        }
+        
+        .upi-id {
+            font-family: monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--temple-dark);
+            margin-bottom: 5px;
+        }
+        
+        .upi-amount {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--temple-red);
+            margin: 10px 0;
+        }
+        
+        .upi-instructions {
+            text-align: left;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #E2E8F0;
+        }
+        
+        .upi-instruction {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: var(--temple-dark);
+        }
+        
+        .upi-instruction i {
+            color: var(--temple-red);
+            margin-right: 8px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        
+        .close-upi-btn {
+            background: linear-gradient(to right, var(--temple-red), var(--temple-orange));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .close-upi-btn:hover {
+            background: linear-gradient(to right, var(--temple-dark-red), var(--temple-red));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
+        }
+        
+        /* Registration Status */
+        .registration-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 2px solid var(--temple-saffron);
+        }
+        
+        .status-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--temple-dark);
+        }
+        
+        .status-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .status-icon.completed {
+            background: var(--temple-success);
+            color: white;
+        }
+        
+        .status-icon.pending {
+            background: #E53E3E;
+            color: white;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+            20%, 40%, 60%, 80% { transform: translateX(4px); }
+        }
+        
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+        
+        /* Form Field Validation */
+        .form-input.valid {
+            border-color: var(--temple-success);
+        }
+        
+        .form-input.invalid {
+            border-color: var(--temple-red);
+        }
+        
+        /* Field Validation Indicator */
+        .field-status {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            display: none;
+        }
+        
+        .field-status.valid {
+            color: var(--temple-success);
+            display: block;
+        }
+        
+        .field-status.invalid {
+            color: var(--temple-red);
+            display: block;
+        }
+        
+        /* Alert Message Styles */
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 450px;
+            z-index: 1000;
+        }
+        
+        .alert-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 5px solid #28a745;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid #dc3545;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+            
+            .main-container {
+                max-width: 100%;
+            }
+            
+            .app-header {
+                margin-bottom: 12px;
+            }
+            
+            .app-logo {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+            
+            .app-title h1 {
+                font-size: 18px;
+            }
+            
+            .app-title p {
+                font-size: 12px;
+            }
+            
+            .tabs-container {
+                margin-bottom: 12px;
+            }
+            
+            .tab-btn {
+                padding: 8px 4px;
+                font-size: 11px;
+            }
+            
+            .tab-btn i {
+                font-size: 12px;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .amount-selection {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .amount-custom {
+                grid-column: span 2;
+            }
+            
+            .selection-option {
+                min-width: calc(50% - 4px);
+            }
+            
+            .selection-btn {
+                min-height: 55px;
+                padding: 6px 3px;
+            }
+            
+            .selection-btn i {
+                font-size: 14px;
+            }
+            
+            .selection-btn span {
+                font-size: 10px;
+            }
+            
+            #qr-code {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .upi-modal-content {
+                padding: 15px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Alert Container (Fixed at top) -->
+    <div class="alert-container" id="alertContainer"></div>
+
+    <div class="main-container">
+
+        <!-- Compact Tabs Navigation -->
+        <div class="tabs-container">
+            <div class="compact-tabs">
+                <button class="tab-btn active" onclick="switchTab('userentry')">
+                    <i class="fas fa-user"></i>
+                    <span>Register</span>
+                </button>
+                <button class="tab-btn" onclick="switchTab('donation')" id="donationTabBtn">
+                    <i class="fas fa-donate"></i>
+                    <span>Donation</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Registration Status -->
+        <div class="registration-status" id="registrationStatus" style="display: none;">
+            <div class="status-text">Registration Status:</div>
+            <div class="status-icon pending">
+                <i class="fas fa-exclamation"></i>
+            </div>
+        </div>
+
+        <!-- Tab Content Area -->
+        <!-- User Entry Tab -->
+        <div id="userentry" class="tab-content active">
+
+            <div class="card">
+            <!-- Header with Logo and Text -->
+                <div class="app-header">
+                    <div class="app-logo">
+                        <i class="fas fa-hands-praying"></i>
+                    </div>
+                    <div class="app-title">
+                        <h1>User Registration</h1>
+                        <p>Complete registration to proceed to donation</p>
+                    </div>
+                </div>	
+            
+                <div class="success-message" id="userSuccessMessage">
+                    <i class="fas fa-check-circle"></i> Registration successful!
+                </div>
+
+                <!-- Add CSRF Token here -->
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user"></i> Full Name <span class="required">*</span>
+                    </label>
+                    <div class="input-container">
+                        <i class="input-icon fas fa-user"></i>
+                        <input type="text" class="form-input" id="fullName" placeholder="Enter your full name" oninput="autoTranslateToTamil()">
+                        <span class="field-status" id="fullNameStatus"></span>
+                        <span class="field-error" id="fullNameInvalid"></span>
+                    </div>
+                    <div class="error-message" id="fullNameError">Please enter your full name</div>
+                    <div class="tamil-display" id="tamilDisplay"></div>
+                </div>
+
+                <div class="tamil-name-container">
+                    <label class="form-label">
+                        <i class="fas fa-language"></i> Tamil Name <span class="required">*</span>
+                    </label>
+                    <input type="text" class="form-input tamil-name-input" id="tamilName" placeholder="தமிழ்ப் பெயர்">
+                    <div class="error-message" id="tamilNameError">Please enter your Tamil name</div>
+                    <span class="field-status" id="tamilNameStatus"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-phone"></i> Phone Number <span class="required">*</span>
+                    </label>
+                    <div class="input-container">
+                        <i class="input-icon fas fa-phone"></i>
+                        <input type="tel" class="form-input" id="phone" placeholder="Enter 10-digit phone number">
+                        <span class="field-status" id="phoneStatus"></span>
+                    </div>
+                    <div class="error-message" id="phoneError">Please enter a valid 10-digit phone number</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-envelope"></i> Email Address
+                    </label>
+                    <div class="input-container">
+                        <i class="input-icon fas fa-envelope"></i>
+                        <input type="email" class="form-input" id="email" placeholder="Enter your email">
+                        <span class="field-status" id="emailStatus"></span>
+                    </div>
+                    <div class="error-message" id="emailError">Please enter a valid email address</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-venus-mars"></i> Gender <span class="required">*</span>
+                    </label>
+                    <div class="selection-group">
+                        <div class="selection-option">
+                            <div class="selection-btn" onclick="selectGender('male')">
+                                <i class="fas fa-male"></i>
+                                <span>Male</span>
+                            </div>
+                        </div>
+                        <div class="selection-option">
+                            <div class="selection-btn" onclick="selectGender('female')">
+                                <i class="fas fa-female"></i>
+                                <span>Female</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="error-message" id="genderError">Please select your gender</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-home"></i> Door Number <span class="required">*</span>
+                        </label>
+                        <div class="input-container">
+                            <i class="input-icon fas fa-home"></i>
+                            <input type="text" class="form-input" id="doorNumber" placeholder="Door no.">
+                            <span class="field-status" id="doorNumberStatus"></span>
+                        </div>
+                        <div class="error-message" id="doorNumberError">Please enter door number</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-users"></i> Family Size <span class="required">*</span>
+                        </label>
+                        <div class="input-container">
+                            <i class="input-icon fas fa-users"></i>
+                            <input type="number" class="form-input" id="familySize" placeholder="Members" min="1" max="50">
+                            <span class="field-status" id="familySizeStatus"></span>
+                        </div>
+                        <div class="error-message" id="familySizeError">Please enter family size</div>
+                    </div>
+                    
+                    
+                </div>
+                <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-building"></i> Location <span class="required">*</span>
+                        </label>
+                        <div class="input-container">
+                            <i class="input-icon fas fa-building"></i>
+                            <input type="text" class="form-input" id="location" placeholder="Chennimalai"  style="width: 100%;">
+                            <span class="field-status" id="locationStatus></span>
+                        </div>
+                        <div class="error-message" id="locationError">Please enter location</div>
+                    </div>
+
+                <button class="btn-next alink" onclick="registerUser()">
+                    <i class="fas fa-arrow-right"></i> Next: Proceed to Donation
+                </button>
+                <a class="btn-back" href="/">
+                    <i class="fas fa-arrow-left"></i> Back: Go to Home
+                </a>
+            </div>
+        </div>
+
+        <!-- Donation Tab -->
+        <div id="donation" class="tab-content">
+            <div class="card">
+                <!-- Header with Logo and Text -->
+                <div class="app-header">
+                    <div class="app-logo">
+                        <i class="fas fa-donate"></i>
+                    </div>
+                    <div class="app-title">
+                        <h1>Make a Donation</h1>
+                        <p>Support our temple with your generous contribution</p>
+                    </div>
+                </div>
+
+                <div class="success-message" id="donationSuccessMessage">
+                    <i class="fas fa-check-circle"></i> Donation successful! Thank you.
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-gift"></i> Donation Type <span class="required">*</span>
+                    </label>
+                    <div class="selection-group">
+                        <div class="selection-option">
+                            <div class="selection-btn" onclick="selectDonationType('construction')">
+                                <i class="fas fa-hammer"></i>
+                                <span>Construction</span>
+                            </div>
+                        </div>
+                        <div class="selection-option">
+                            <div class="selection-btn" onclick="selectDonationType('maintenance')">
+                                <i class="fas fa-tools"></i>
+                                <span>Maintenance</span>
+                            </div>
+                        </div>
+                        <div class="selection-option">
+                            <div class="selection-btn" onclick="selectDonationType('festival')">
+                                <i class="fas fa-mask"></i>
+                                <span>Festival</span>
+                            </div>
+                        </div>
+                        <div class="selection-option">
+                            <div class="selection-btn" onclick="selectDonationType('annadanam')">
+                                <i class="fas fa-utensils"></i>
+                                <span>Annadanam</span>
+                            </div>
+                        </div>
+                        <div class="selection-option">
+                            <div class="selection-btn" onclick="selectDonationType('education')">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Education</span>
+                            </div>
+                        </div>
+                        <div class="selection-option">
+                            <div class="selection-btn" onclick="selectDonationType('other')">
+                                <i class="fas fa-hands-helping"></i>
+                                <span>Other</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="error-message" id="donationTypeError">Please select donation type</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-rupee-sign"></i> Donation Amount <span class="required">*</span>
+                    </label>
+                    <div class="amount-selection">
+                        <button class="amount-btn" onclick="selectAmount(101)">₹101</button>
+                        <button class="amount-btn" onclick="selectAmount(251)">₹251</button>
+                        <button class="amount-btn" onclick="selectAmount(501)">₹501</button>
+                        <button class="amount-btn" onclick="selectAmount(1001)">₹1,001</button>
+                        <button class="amount-btn" onclick="selectAmount(2001)">₹2,001</button>
+                        <button class="amount-btn" onclick="selectAmount(5001)">₹5,001</button>
+                        <div class="amount-custom">
+                            <input type="number" class="custom-amount" id="customAmount" placeholder="Custom amount" min="1">
+                        </div>
+                    </div>
+                    <div class="error-message" id="amountError">Please select or enter donation amount</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-comment-alt"></i> Donation For (Optional)
+                    </label>
+                    <div class="input-container">
+                        <i class="input-icon fas fa-comment-alt"></i>
+                        <input type="text" class="form-input" id="donationFor" placeholder="E.g., For temple renovation">
+                    </div>
+                </div>
+
+                <div class="donation-summary">
+                    <div class="summary-title">
+                        <i class="fas fa-receipt"></i> Donation Summary
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Donation Type:</span>
+                        <span class="summary-value" id="summaryType">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Amount:</span>
+                        <span class="summary-value" id="summaryAmount">₹0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Payment Method:</span>
+                        <span class="summary-value" id="summaryPayment">-</span>
+                    </div>
+                    <div class="summary-total">
+                        <span class="summary-label">Total Amount:</span>
+                        <span class="summary-value" id="summaryTotal">₹0</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-credit-card"></i> Payment Method <span class="required">*</span>
+                    </label>
+                    <div class="payment-methods">
+                        <div class="payment-option active" onclick="selectPayment('upi')" id="upiOption">
+                            <div class="payment-icon upi">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="payment-info">
+                                <div class="payment-display-style">
+                                    <div class="payment-name">UPI / QR Code</div>
+                                    <div class="payment-scanner" style="display: none;"><button class="btn-qr" onclick="openUPIModal();">Open QR Scanner</button></div>
+                                </div>
+                                <div class="payment-desc">Google Pay, PhonePe, Paytm, BHIM</div>
+                            </div>
+                            <i class="fas fa-check-circle" style="color: var(--temple-red);"></i>
+                        </div>
+                        <div class="payment-option" onclick="selectPayment('cash')">
+                            <div class="payment-icon cash">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="payment-info">
+                                <div class="payment-name">Cash Payment</div>
+                                <div class="payment-desc">Pay at temple counter</div>
+                            </div>
+                            <i class="fas fa-check-circle" style="color: var(--temple-red); display: none;"></i>
+                        </div>
+                    </div>
+                    <div class="error-message" id="paymentError">Please select payment method</div>
+                </div>
+
+                <button class="btn-primary" onclick="submitDonation()" id="donationBtn">
+                    <i class="fas fa-lock"></i> Proceed to Payment
+                </button>
+                <a class="btn-back" href="/">
+                    <i class="fas fa-arrow-left"></i> Back: Go to Home
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- UPI QR Code Modal -->
+    <div class="upi-modal" id="upiModal">
+        <div class="upi-modal-content">
+            <div class="upi-modal-header">
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <div style="font-size: 20px; font-weight: 700; color: var(--temple-red); margin-bottom: 5px;">
+                        <i class="fas fa-qrcode"></i> Scan to Pay via UPI
+                    </div>
+                    <div style="font-size: 14px; color: var(--temple-dark); opacity: 0.8;">
+                        Scan this QR code with any UPI app to complete your donation
+                    </div>
+                </div>
+            </div>
+            
+            <div class="qr-code-container">
+                <div id="qr-code"></div>
+            </div>
+            
+            <div class="upi-details">
+                <div class="upi-amount" id="modalAmount">₹0</div>
+                <div class="upi-id">temple.donation@upi</div>
+            </div>
+            
+            <div class="upi-instructions">
+                <div class="upi-instruction">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Open any UPI app (GPay, PhonePe, Paytm, etc.)</span>
+                </div>
+                <div class="upi-instruction">
+                    <i class="fas fa-camera"></i>
+                    <span>Tap on "Scan QR Code" in your UPI app</span>
+                </div>
+                <div class="upi-instruction">
+                    <i class="fas fa-qrcode"></i>
+                    <span>Point your camera at this QR code</span>
+                </div>
+                <div class="upi-instruction">
+                    <i class="fas fa-rupee-sign"></i>
+                    <span>Enter donation amount: <strong id="upiAmount">₹0</strong></span>
+                </div>
+                <div class="upi-instruction">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Complete the payment in your UPI app</span>
+                </div>
+            </div>
+            
+            <button class="close-upi-btn" onclick="closeUPIModal()">
+                <i class="fas fa-times"></i> Close QR Code
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize variables
+        let selectedGender = '';
+        let selectedDonationType = null;
+        let selectedAmount = 0;
+        let selectedPayment = 'upi'; // Default to UPI
+        let registrationCompleted = false;
+        let qrCode = null;
+        const scanner = document.querySelector('.payment-scanner');
+
+        if (selectedPayment === 'upi') {
+            scanner.style.display = 'block';
+        } else {
+            scanner.style.display = 'none';
+        }
+
+        // Function to show success message
+        function showSuccess(message) {
+            const alertContainer = document.getElementById('alertContainer');
+            
+            // Create alert element
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert-message alert-success';
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                ${message}
+            `;
+            
+            // Clear any existing alerts
+            alertContainer.innerHTML = '';
+            
+            // Add new alert
+            alertContainer.appendChild(alertDiv);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+        
+        // Function to show error message
+        function showError(message) {
+            const alertContainer = document.getElementById('alertContainer');
+            
+            // Create alert element
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert-message alert-error';
+            alertDiv.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                ${message}
+            `;
+            
+            // Clear any existing alerts
+            alertContainer.innerHTML = '';
+            
+            // Add new alert
+            alertContainer.appendChild(alertDiv);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        
+
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.tab-btn[onclick*="${tabName}"]`).classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            
+            // Update progress indicator
+            if (tabName === 'userentry') {
+                document.getElementById('step1').classList.add('active');
+                document.getElementById('step2').classList.remove('active');
+                document.getElementById('step2').classList.remove('completed');
+            } else if (tabName === 'donation') {
+                document.getElementById('step1').classList.remove('active');
+                document.getElementById('step1').classList.add('completed');
+                document.getElementById('step2').classList.add('active');
+                updateDonationSummary();
+            }
+        }
+
+        // Real-time form validation
+        function validateField(fieldId, validator) {
+            console.log(":")
+            
+        }
+
+        // Field validators
+        function validateName(name) {
+            return name.length >= 2 && /^[a-zA-Z\s]+$/.test(name);
+        }
+
+        function validatePhone(phone) {
+            return /^[6-9]\d{9}$/.test(phone);
+        }
+
+        function validateEmail(email) {
+            if (email === '') return true; // Optional field
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validateDoorNumber(doorNo) {
+            return doorNo.length >= 1;
+        }
+
+        function validateFamilySize(size) {
+            return size >= 1 && size <= 50;
+        }
+
+        function validateLocation(location) {
+            return location.length >= 2;
+        }
+
+        // Auto-translate English name to Tamil placeholder
+        function autoTranslateToTamil() {
+            const englishName = document.getElementById('fullName').value.trim();
+            const tamilDisplay = document.getElementById('tamilDisplay');
+            
+            if (englishName.length >= 2) {
+                // Simple mapping for demo purposes
+                const nameMappings = {
+                    'raj': 'ராஜ்',
+                    'kumar': 'குமார்',
+                    'suresh': 'சுரேஷ்',
+                    'karthik': 'கார்த்திக்',
+                    'anu': 'அனு',
+                    'priya': 'பிரியா',
+                    'lakshmi': 'லக்ஷ்மி',
+                    'arun': 'அருண்',
+                    'deepa': 'தீபா',
+                    'gopal': 'கோபால்',
+                    'hari': 'ஹரி',
+                    'isha': 'இஷா',
+                    'jaya': 'ஜெயா',
+                    'kannan': 'கண்ணன்',
+                    'latha': 'லதா',
+                    'mani': 'மணி',
+                    'nisha': 'நிஷா',
+                    'prakash': 'பிரகாஷ்',
+                    'ram': 'ராம்',
+                    'sita': 'சீதா',
+                    'venkat': 'வெங்கட்'
+                };
+                
+                let tamilName = '';
+                const words = englishName.toLowerCase().split(' ');
+                
+                words.forEach(word => {
+                    if (nameMappings[word]) {
+                        tamilName += nameMappings[word] + ' ';
+                    } else {
+                        // If no mapping, show the word as is
+                        tamilName += word + ' ';
+                    }
+                });
+                
+                tamilDisplay.textContent = tamilName.trim() || 'Type your name for Tamil translation';
+                tamilDisplay.classList.add('show');
+                
+                // Auto-fill Tamil name field
+                document.getElementById('tamilName').value = tamilName.trim();
+            } else {
+                tamilDisplay.classList.remove('show');
+                document.getElementById('tamilName').value = '';
+            }
+            
+            // Validate the field
+            validateField('fullName', validateName);
+        }
+
+        // Gender selection
+        function selectGender(gender) {
+            selectedGender = gender;
+            document.querySelectorAll('.selection-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            document.getElementById('genderError').classList.remove('show');
+            
+            // Update registration status
+            updateRegistrationStatus();
+        }
+
+        // Real-time validation for all fields
+        document.getElementById('fullName').addEventListener('input', function() {
+            autoTranslateToTamil();
+            validateField('fullName', validateName);
+            updateRegistrationStatus();
+        });
+
+        document.getElementById('phone').addEventListener('input', function() {
+            validateField('phone', validatePhone);
+            updateRegistrationStatus();
+        });
+
+        document.getElementById('email').addEventListener('input', function() {
+            validateField('email', validateEmail);
+            updateRegistrationStatus();
+        });
+
+        document.getElementById('doorNumber').addEventListener('input', function() {
+            validateField('doorNumber', validateDoorNumber);
+            updateRegistrationStatus();
+        });
+
+        document.getElementById('familySize').addEventListener('input', function() {
+            validateField('familySize', validateFamilySize);
+            updateRegistrationStatus();
+        });
+
+        document.getElementById('location').addEventListener('input', function() {
+            validateField('location', validateLocation);
+            updateRegistrationStatus();
+        });
+
+        document.getElementById('tamilName').addEventListener('input', function() {
+            updateRegistrationStatus();
+        });
+        function resetRegisterUser(){
+            let full_name =  document.getElementById('fullName')
+            full_name.value = ''
+            let tamil_name = document.getElementById('tamilName')
+            tamil_name.value = ''
+            let phone_number = document.getElementById('phone')
+            phone_number.value = ''
+            let email = document.getElementById('email')
+            email.value = ''
+            let gender = selectedGender
+            document.querySelectorAll('.selection-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            selectedGender = ''
+            let door_number = document.getElementById('doorNumber')
+            door_number.value = ''
+            let family_size = document.getElementById('familySize')
+            family_size.value = ''
+            let location = document.getElementById('location')
+            location.value = ''
+        }
+        // Update registration status in real-time
+        function updateRegistrationStatus() {
+            const statusContainer = document.getElementById('registrationStatus');
+            const statusIcon = statusContainer.querySelector('.status-icon');
+            const statusText = statusContainer.querySelector('.status-text');
+            
+            let full_name =  document.getElementById('fullName').value.trim()
+            let tamil_name = document.getElementById('tamilName').value.trim()
+            let phone_number = document.getElementById('phone').value.trim()
+            let email = document.getElementById('email').value.trim()
+            let gender = selectedGender
+            let door_number = document.getElementById('doorNumber').value.trim()
+            let family_size = document.getElementById('familySize').value.trim()
+            let location = document.getElementById('location').value.trim()
+            let donation_type = selectedDonationType
+            let donation_amount = selectedAmount
+            let donation_for = document.getElementById('donationFor').value.trim()
+            let payment_method = selectedPayment
+            let timestamp = new Date().toISOString()
+            console.log(full_name ,
+            tamil_name,
+            phone_number,
+            email ,
+            gender,
+            door_number ,
+            family_size,
+            location,donation_type)
+            const allFieldsValid = full_name != '' && tamil_name!= '' && phone_number!= '' &&
+            gender != '' && door_number != '' && family_size != '' && location!= '' 
+            console.log(allFieldsValid)
+            
+            if (allFieldsValid) {
+                statusContainer.style.display = 'flex';
+                statusIcon.className = 'status-icon completed';
+                statusIcon.innerHTML = '<i class="fas fa-check"></i>';
+                statusText.textContent = 'Registration Complete - Ready for Donation';
+                registrationCompleted = true;
+                
+                // Enable donation tab
+                document.querySelector('#donationTabBtn').style.opacity = '1';
+                document.querySelector('#donationTabBtn').style.cursor = 'pointer';
+            } else {
+                statusContainer.style.display = 'flex';
+                statusIcon.className = 'status-icon pending';
+                statusIcon.innerHTML = '<i class="fas fa-exclamation"></i>';
+                statusText.textContent = 'Registration Incomplete - Fill all fields';
+                registrationCompleted = false;
+            }
+        }
+
+        // Register user
+        console.log('registrationCompleted',registrationCompleted)
+        function registerUser() {
+            if (!registrationCompleted) {
+                showError('Please complete all registration fields before proceeding.');
+                return;
+            }
+            
+            // Show success message
+            const successMsg = document.getElementById('userSuccessMessage');
+            successMsg.classList.add('show');
+            
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+            }, 3000); // 3000 ms = 3 seconds
+            // Switch to donation tab after 1 second
+            setTimeout(() => {
+                switchTab('donation');
+            }, 1000);
+        }
+
+        // Donation Tab Functions
+        function selectDonationType(type) {
+            selectedDonationType = type;
+            document.querySelectorAll('.selection-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            document.getElementById('donationTypeError').classList.remove('show');
+            updateDonationSummary();
+        }
+
+        function selectAmount(amount) {
+            selectedAmount = amount;
+            document.querySelectorAll('.amount-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            document.getElementById('customAmount').value = '';
+            document.getElementById('amountError').classList.remove('show');
+            updateDonationSummary();
+        }
+
+        document.getElementById('customAmount').addEventListener('input', function() {
+            const value = parseInt(this.value) || 0;
+            if (value > 0) {
+                selectedAmount = value;
+                document.querySelectorAll('.amount-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.getElementById('amountError').classList.remove('show');
+                updateDonationSummary();
+            }
+        });
+
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('active');
+                option.querySelector('.fa-check-circle').style.display = 'none';
+            });
+            event.currentTarget.classList.add('active');
+            event.currentTarget.querySelector('.fa-check-circle').style.display = 'block';
+            document.getElementById('paymentError').classList.remove('show');
+            
+            if (selectedPayment === 'upi') {
+                scanner.style.display = 'block';
+            } else {
+                scanner.style.display = 'none';
+            }
+
+            updateDonationSummary();
+        }
+
+        // UPI option click handler
+        document.getElementById('upiOption').addEventListener('click', function() {
+            selectPayment('upi');
+            // Open UPI modal immediately when UPI card is clicked
+            // We'll let submitDonation handle this
+        });
+
+        function updateDonationSummary() {
+            const typeMap = {
+                'construction': 'Construction',
+                'maintenance': 'Maintenance',
+                'festival': 'Festival',
+                'annadanam': 'Annadanam',
+                'education': 'Education Fund',
+                'other': 'Other'
+            };
+            
+            const paymentMap = {
+                'upi': 'UPI Payment',
+                'cash': 'Cash Payment'
+            };
+            
+            document.getElementById('summaryType').textContent = selectedDonationType ? typeMap[selectedDonationType] : '-';
+            document.getElementById('summaryAmount').textContent = selectedAmount ? `₹${selectedAmount.toLocaleString()}` : '₹0';
+            document.getElementById('summaryPayment').textContent = selectedPayment ? paymentMap[selectedPayment] : '-';
+            document.getElementById('summaryTotal').textContent = selectedAmount ? `₹${selectedAmount.toLocaleString()}` : '₹0';
+        }
+
+        function validateDonationForm() {
+            let isValid = true;
+            
+            if (!selectedDonationType) {
+                document.getElementById('donationTypeError').classList.add('show');
+                isValid = false;
+            }
+            
+            if (!selectedAmount || selectedAmount <= 0) {
+                document.getElementById('amountError').classList.add('show');
+                isValid = false;
+            }
+            
+            if (!selectedPayment) {
+                document.getElementById('paymentError').classList.add('show');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+
+        function openUPIModal() {
+            const modal = document.getElementById('upiModal');
+            
+            // Update modal amount
+            const amountText = selectedAmount ? `₹${selectedAmount.toLocaleString()}` : '₹0';
+            document.getElementById('modalAmount').textContent = amountText;
+            document.getElementById('upiAmount').innerHTML = `<strong>${amountText}</strong>`;
+            
+            // Generate QR code
+            generateQRCode();
+            
+            // Show modal
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function generateQRCode() {
+            // Clear previous QR code
+            const qrContainer = document.getElementById('qr-code');
+            qrContainer.innerHTML = '';
+            
+            // Create UPI payment string
+            const upiString = `upi://pay?pa=temple.donation@upi&pn=Temple%20Donation&am=${selectedAmount}&cu=INR&tn=Donation%20for%20${selectedDonationType}`;
+            
+            // Generate QR code
+            qrCode = new QRCode(qrContainer, {
+                text: upiString,
+                width: 180,
+                height: 180,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        function closeUPIModal() {
+            const modal = document.getElementById('upiModal');
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        function resetDonationForm() {
+            selectedDonationType = null;
+            selectedAmount = 0;
+            selectedPayment = 'upi'; // Reset to UPI
+            
+            document.querySelectorAll('.selection-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('active');
+                option.querySelector('.fa-check-circle').style.display = 'none';
+            });
+            
+            // Set UPI as active again
+            document.getElementById('upiOption').classList.add('active');
+            document.getElementById('upiOption').querySelector('.fa-check-circle').style.display = 'block';
+            
+            document.getElementById('customAmount').value = '';
+            document.getElementById('donationFor').value = '';
+            document.getElementById('donationBtn').disabled = false;
+            document.getElementById('donationBtn').innerHTML = '<i class="fas fa-lock"></i> Proceed to Payment';
+            
+            updateDonationSummary();
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('upiModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeUPIModal();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Remove shake animation after it completes
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.addEventListener('animationend', function() {
+                    this.classList.remove('shake');
+                });
+            });
+            
+            // Show registration status
+            updateRegistrationStatus();
+            
+            // Set UPI as default payment method
+            updateDonationSummary();
+        });
+
+
+        // Main function to submit all data to Django
+        function submitDonation() {
+            // Validate donation form first
+            if (!validateDonationForm()) return;
+            
+            // Get all form values
+            const formData = {
+                full_name: document.getElementById('fullName').value.trim(),
+                tamil_name: document.getElementById('tamilName').value.trim(),
+                phone_number: document.getElementById('phone').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                gender: selectedGender,
+                door_number: document.getElementById('doorNumber').value.trim(),
+                family_size: document.getElementById('familySize').value.trim(),
+                location: document.getElementById('location').value.trim(),
+                donation_type: selectedDonationType,
+                donation_amount: selectedAmount,
+                donation_for: document.getElementById('donationFor').value.trim(),
+                payment_method: selectedPayment,
+                timestamp: new Date().toISOString()
+            };
+            console.log(formData)
+            // Get CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            // Show loading state on button
+            const donationBtn = document.getElementById('donationBtn');
+            const originalBtnText = donationBtn.innerHTML;
+            donationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            donationBtn.disabled = true;
+            
+            fetch("{% url 'mainmaster' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! Status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                console.log("Server response:", data);
+
+                donationBtn.innerHTML = originalBtnText;
+                donationBtn.disabled = false;
+
+                if (data.status === "success") {
+
+                    showSuccess("Donation submitted successfully!");
+
+                    const successMsg = document.getElementById("donationSuccessMessage");
+                    if (successMsg) {
+                        successMsg.classList.add("show");
+                    }
+
+                    
+
+                    setTimeout(() => {
+                        if (successMsg) {
+                            successMsg.classList.remove("show");
+                        }
+                        resetRegisterUser()
+                        resetDonationForm();
+                        
+                        window.location.href = `{% url 'mainmaster' %}`;
+                    }, 5000);
+
+                } else {
+                    showError(data.message || "Submission failed.");
+                }
+            })
+            .catch(error => {
+                console.error("Fetch error:", error);
+
+                donationBtn.innerHTML = originalBtnText;
+                donationBtn.disabled = false;
+
+                showError("Network error. Please try again.");
+            });
+        }
+    </script>
+</body>
+</html>
